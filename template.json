@@ -1,0 +1,186 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_Auto_UseCase_Number_name": {
+                        "type": "String"
+        },
+        "connections_visualstudioteamservices_5_externalid": {
+                        "type": "String"
+        },
+        "prj_name": {
+                            "type": "String"
+                    },
+        "Organization_Name": {
+                            "type": "String"
+                        },
+        "api_connection_id":{
+               "type" : "String"
+                             }
+
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_Auto_UseCase_Number_name')]",
+            "location": "centralus",
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        },
+                        "Organization_Name": {
+                           
+                            "type": "String"
+                        },
+                        "prj_name": {
+                            
+                            "type": "String"
+                        }
+                    },
+                    "triggers": {
+                        "When_a_Use_Case_is_created": {
+                            "recurrence": {
+                                "frequency": "Second",
+                                "interval": 10
+                            },
+                            "evaluatedRecurrence": {
+                                "frequency": "Second",
+                                "interval": 10
+                            },
+                            "splitOn": "@triggerBody()?['value']",
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['visualstudioteamservices']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/v2/workitemcreated_trigger/@{encodeURIComponent(parameters('prj_name'))}/_apis/wit/wiql",
+                                "queries": {
+                                    "account": "@parameters('Organization_Name')",
+                                    "areaPathComparison": "Equals",
+                                    "iterationPathComparison": "Equals",
+                                    "wiql__System_WorkItemType": "Use Case Intake"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "Initialize_ID": {
+                            "runAfter": {
+                                "Initialize_Use_Case_Number": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "UseCaseID",
+                                        "type": "string",
+                                        "value": "@{triggerBody()?['fields']?['System_Id']}"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_Random_Number": {
+                            "runAfter": {
+                                "Initialize_ID": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "Random Number",
+                                        "type": "string",
+                                        "value": "@{rand(0,9)}"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_Use_Case_Number": {
+                            "runAfter": {},
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "UseCaseNumber",
+                                        "type": "string"
+                                    }
+                                ]
+                            }
+                        },
+                        "Set_variable": {
+                            "runAfter": {
+                                "Initialize_Random_Number": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "SetVariable",
+                            "inputs": {
+                                "name": "UseCaseNumber",
+                                "value": "MDF_UC_@{variables('UseCaseID')}@{variables('Random Number')}"
+                            }
+                        },
+                        "Update_Use_Case_Number": {
+                            "runAfter": {
+                                "Set_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "userEnteredFields": {
+                                        "Use Case Number": "@variables('UseCaseNumber')"
+                                    }
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['visualstudioteamservices']['connectionId']"
+                                    }
+                                },
+                                "method": "patch",
+                                "path": "/_apis/wit/workitems/@{encodeURIComponent(triggerBody()?['fields']?['System_Id'])}",
+                                "queries": {
+                                    "account": "@parameters('Organization_Name')"
+                                }
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "visualstudioteamservices": {
+                                "connectionId": "[parameters('connections_visualstudioteamservices_5_externalid')]",
+                                "connectionName": "visualstudioteamservices-5",
+                                "id": "[parameters('api_connection_id')]"
+                            }
+                        }
+                    },
+                    "prj_name": {
+                        "value": "[parameters('prj_name')]"
+                                    },
+                    "Organization_Name": {
+                            "value" : "[parameters('Organization_Name')]"
+                                    }
+                }
+                
+                
+            }
+        }
+    ]
+}
