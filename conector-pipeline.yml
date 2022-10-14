@@ -1,5 +1,5 @@
 trigger:
-- workflow
+- main
 
 pr: none
 
