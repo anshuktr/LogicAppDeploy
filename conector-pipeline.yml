@@ -34,4 +34,4 @@ stages:
     parameters:
       environment: $(devEnvironment)
       # TODO: Fill in with the name of your Azure service connection
-      serviceConnection: 'logicapp'
+      serviceConnection: 'Az_DevOps_Pipeline'

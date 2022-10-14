@@ -17,7 +17,7 @@ variables:
   logicAppName: 'LA-10'
 
   # API Connections - if you change this name, you must change the reference in workflow.json
-  blobConnectionName: 'azureblob'
+  blobConnectionName: 'visualstudioteamservices_1'
 
   # Project artifacts
   logicAppCIArtifactName: 'logicapp_publish_artifact'
