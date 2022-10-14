@@ -1,0 +1,41 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- template: variables/pipeline-vars.yml
+
+jobs:
+- job: logic_app_build
+  displayName: 'Build and publish logic app'
+  steps:
+  - task: CopyFiles@2
+    displayName: 'Create project folder'
+    inputs:
+      SourceFolder: '$(System.DefaultWorkingDirectory)/azure-devops-logicapp/logic'
+      Contents: |
+        **
+      TargetFolder: 'project_output'
+
+  - task: ArchiveFiles@2
+    displayName: 'Create project zip'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/project_output'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+      replaceExistingArchive: true
+
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish project zip artifact'
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+      artifact: '$(logicAppCIArtifactName)'
+      publishLocation: 'pipeline'
