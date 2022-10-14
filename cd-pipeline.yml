@@ -1,0 +1,83 @@
+trigger: none
+
+pr: none
+
+variables:
+- name: devEnvironment
+  value: dev
+
+resources:
+  pipelines:
+  - pipeline: 'cipipeline'
+    # TODO: Update with the name of your CI pipeline
+    source: 'CI'
+    trigger:
+      branches:
+      - workflow
+
+stages:
+- stage: DEV
+  displayName: 'DEV Deployment'
+  variables:
+  - template: variables/pipeline-vars.yml
+  jobs:
+  - deployment: deploy_logicapp_resources
+    displayName: Deploy Logic App
+    pool:
+      vmImage: ubuntu-latest
+    environment: $(devEnvironment)
+    variables:
+      deploymentMode: 'Incremental'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureAppServiceSettings@1
+            displayName: Azure App Service Settings
+            inputs:
+              azureSubscription: 'logicapp'
+              appName: '$(logicAppName)'
+              resourceGroupName: '$(resourceGroupName)'
+              
+              # Add the app settings for the connections 
+            
+              appSettings: |
+                [
+                    {
+                    "name": "AzureFunctionsJobHost__extensionBundle__version",
+                    "value": "[1.*, 2.0.0)"
+                    },
+                    {
+                    "name": "FUNCTIONS_EXTENSION_VERSION",
+                    "value": "~3"
+                    },
+                    {
+                    "name": "FUNCTIONS_V2_COMPATIBILITY_MODE",
+                    "value": "true"
+                    },
+                    {
+                    "name": "FUNCTIONS_WORKER_RUNTIME",
+                    "value": "node"
+                    },
+                    {
+                    "name": "WORKFLOWS_SUBSCRIPTION_ID",
+                    "value": "df880389-b7e8-498c-a6d4-134f7f5decce"
+                    },
+                    {
+                    "name": "WORKFLOWS_RESOURCE_GROUP_NAME",
+                    "value": "shyamrg-logicapp"
+                    },
+                    {
+                    "name": "WORKFLOWS_LOCATION_NAME",
+                    "value": "centralus"
+                    }                    
+                ]
+          - task: AzureFunctionApp@1
+            displayName: 'Deploy logic app workflows'
+            inputs:
+              # TODO: Fill in with the name of your Azure service connection
+              azureSubscription: 'logicapp'
+              appType: 'functionApp'
+              appName: '$(logicAppName)'
+              package: '$(Pipeline.Workspace)/cipipeline/$(logicAppCIArtifactName)/$(resources.pipeline.cipipeline.runID).zip'
+              deploymentMethod: 'zipDeploy'

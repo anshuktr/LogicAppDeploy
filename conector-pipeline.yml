@@ -1,0 +1,37 @@
+trigger:
+- workflow
+
+pr: none
+
+variables:
+- name: artifactName
+  value: deploy_artifacts
+- name: devEnvironment
+  value: dev
+
+stages:
+- stage: Builds
+  displayName: 'Publish Connector Artifacts'
+  jobs:
+  - job: Build
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: CopyFiles@2
+      displayName: 'Copy ARM templates'
+      inputs:
+        sourceFolder: '$(System.DefaultWorkingDirectory)/azure-devops-logicapp/deploy'
+        targetFolder: '$(Build.ArtifactStagingDirectory)'
+    - publish: '$(Build.ArtifactStagingDirectory)'
+      artifact: $(artifactName)
+
+- stage: DEV
+  displayName: 'DEV Deployment'
+  variables:
+  - template: variables/pipeline-vars.yml
+  jobs:
+  - template: templates/template-iac-logicapp.yml
+    parameters:
+      environment: $(devEnvironment)
+      # TODO: Fill in with the name of your Azure service connection
+      serviceConnection: 'logicapp'

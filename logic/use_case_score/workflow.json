@@ -1,0 +1,314 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Initialize_variable": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "sum2",
+              "type": "integer",
+              "value": "@add(int(variables('Transcend Products')),int(variables('Readiness')))"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_2": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_2": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "sum1",
+              "type": "integer",
+              "value": "@add(int(variables('Tangible Value Impact')),int(variables('Scalability for PnG')))"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_Dependencies": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_3": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "sum3",
+              "type": "integer",
+              "value": "@add(int(variables('Problems solved')), int(variables('Complexity')))"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_4": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "sum4",
+              "type": "integer",
+              "value": "@add(int(variables('Dependencies')),int(variables('Intangible Value Impact')))"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_3": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_5": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "sum5",
+              "type": "integer",
+              "value": "@add(variables('sum1'),variables('sum2'))"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_4": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_6": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "sum6",
+              "type": "integer",
+              "value": "@add(variables('sum3'),variables('sum4'))"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_5": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_7": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "sum7",
+              "type": "integer",
+              "value": "@add(variables('sum5'),variables('sum6'))"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_6": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_Complexity": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Complexity",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_Problems_solved": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_Dependencies": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Dependencies",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_Complexity": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_Intangible_Value_Impact": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Intangible Value Impact",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_Tangible_Value_Impact": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_Problems_solved": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Problems solved",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_Readiness": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_Readiness": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Readiness",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_Transcend_Products": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_Scalability_for_PnG": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Scalability for PnG",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_Intangible_Value_Impact": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_Tangible_Value_Impact": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Tangible Value Impact",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {},
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_Transcend_Products": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Transcend Products",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_Scalability_for_PnG": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Update_a_work_item": {
+        "inputs": {
+          "body": {
+            "userEnteredFields": {
+              "Use Case Score": "@{variables('sum7')}"
+            }
+          },
+          "host": {
+            "connection": {
+              "referenceName": "visualstudioteamservices_1"
+            }
+          },
+          "method": "patch",
+          "path": "/_apis/wit/workitems/@{encodeURIComponent(triggerBody()?['id'])}",
+          "queries": {
+            "account": "@parameters('Organization_Name')"
+          }
+        },
+        "runAfter": {
+          "Initialize_variable_7": [
+            "Succeeded"
+          ]
+        },
+        "type": "ApiConnection"
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "When_a_work_item_is_created": {
+        "inputs": {
+          "host": {
+            "connection": {
+              "referenceName": "visualstudioteamservices_1"
+            }
+          },
+          "method": "get",
+          "path": "/v2/workitemcreated_trigger/@{encodeURIComponent(parameters('prj_name'))}/_apis/wit/wiql",
+          "queries": {
+            "account": "@parameters('Organization_Name')",
+            "areaPathComparison": "Equals",
+            "iterationPathComparison": "Equals",
+            "wiql__System_WorkItemType": "Use Case Intake"
+          }
+        },
+        "recurrence": {
+          "frequency": "Second",
+          "interval": 15
+        },
+        "splitOn": "@triggerBody()?['value']",
+        "type": "ApiConnection"
+      }
+    }
+  },
+  "parameters": {
+    "$connections": {
+      "value": {
+        "visualstudioteamservices": {
+          "connectionId": "/subscriptions/0f3ae6f5-ea70-4968-a345-b293198b61df/resourceGroups/RG-PnGAutomation/providers/Microsoft.Web/connections/visualstudioteamservices-5",
+          "connectionName": "visualstudioteamservices-5",
+          "id": "/subscriptions/0f3ae6f5-ea70-4968-a345-b293198b61df/providers/Microsoft.Web/locations/centralus/managedApis/visualstudioteamservices"
+        }
+      }
+    }
+  },
+  "kind": "Stateful"
+}
