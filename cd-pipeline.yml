@@ -35,7 +35,7 @@ stages:
           - task: AzureAppServiceSettings@1
             displayName: Azure App Service Settings
             inputs:
-              azureSubscription: 'logicapp'
+              azureSubscription: 'Az_DevOps_Pipeline'
               appName: '$(logicAppName)'
               resourceGroupName: '$(resourceGroupName)'
               
@@ -61,11 +61,11 @@ stages:
                     },
                     {
                     "name": "WORKFLOWS_SUBSCRIPTION_ID",
-                    "value": "df880389-b7e8-498c-a6d4-134f7f5decce"
+                    "value": "0f3ae6f5-ea70-4968-a345-b293198b61df"
                     },
                     {
                     "name": "WORKFLOWS_RESOURCE_GROUP_NAME",
-                    "value": "shyamrg-logicapp"
+                    "value": "PnG_terraform_testing"
                     },
                     {
                     "name": "WORKFLOWS_LOCATION_NAME",
@@ -76,7 +76,7 @@ stages:
             displayName: 'Deploy logic app workflows'
             inputs:
               # TODO: Fill in with the name of your Azure service connection
-              azureSubscription: 'logicapp'
+              azureSubscription: 'Az_DevOps_Pipeline'
               appType: 'functionApp'
               appName: '$(logicAppName)'
               package: '$(Pipeline.Workspace)/cipipeline/$(logicAppCIArtifactName)/$(resources.pipeline.cipipeline.runID).zip'

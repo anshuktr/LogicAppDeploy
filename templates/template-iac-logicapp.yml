@@ -27,7 +27,7 @@ jobs:
             azureSubscription: ${{ parameters.serviceConnection }}
             resourceGroupName: $(resourceGroupName)
             location: $(resourceGroupLocation)
-            csmFile: '$(Pipeline.Workspace)/$(artifactName)/connectors-template.json'
+            csmFile: '$(Pipeline.Workspace)/$(artifactName)/connections.json'
             overrideParameters: '
               -location $(resourceGroupLocation)
               -connections_azureblob_name $(blobConnectionName)
