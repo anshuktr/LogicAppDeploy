@@ -9,9 +9,9 @@ variables:
 
 resources:
   pipelines:
-  - pipeline: ci-pipeline
+  - pipeline: 'ci-pipeline'
     # TODO: Update with the name of your CI pipeline
-    source: 'CI'
+    #source: 'CI'
     trigger:
       branches:
       - workflow
