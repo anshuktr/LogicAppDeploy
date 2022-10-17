@@ -11,7 +11,7 @@ resources:
   pipelines:
   - pipeline: 'ci-pipeline'
     # TODO: Update with the name of your CI pipeline
-    #source: 'CI'
+    source: 'ci-pipeline'
     trigger:
       branches:
       - workflow
