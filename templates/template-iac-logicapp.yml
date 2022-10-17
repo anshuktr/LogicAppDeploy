@@ -20,6 +20,16 @@ jobs:
         steps:
         - download: current
           artifact: $(artifactName)
+      # Extract files
+# Extract a variety of archive and compression files such as .7z, .rar, .tar.gz, and .zip
+        - task: ExtractFiles@1
+          displayName: 'Extract Zip contents'
+          inputs:
+            archiveFilePatterns: '$(Pipeline.Workspace)/**/*.zip' 
+            destinationFolder: '$(Pipeline.Workspace)/extracted'
+            #cleanDestinationFolder: true 
+            #overwriteExistingFiles: false
+            #pathToSevenZipTool:
 
         - task: AzureResourceGroupDeployment@2
           displayName: 'Deploy Connectors'
@@ -27,7 +37,8 @@ jobs:
             azureSubscription: ${{ parameters.serviceConnection }}
             resourceGroupName: $(resourceGroupName)
             location: $(resourceGroupLocation)
-            csmFile: '$(Pipeline.Workspace)/$(artifactName)/connections.json'
+           #csmFile: '$(Pipeline.Workspace)/$(artifactName)/connections.json'
+            csmFile: '$(Pipeline.Workspace)/extracted/connections.json'
             overrideParameters: '
               -location $(resourceGroupLocation)
               -connections_azureblob_name $(blobConnectionName)
