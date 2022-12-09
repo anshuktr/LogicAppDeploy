@@ -1,16 +1,42 @@
 {
   "managedApiConnections": {
-    "visualstudioteamservices_1": {
+    "visualstudioteamservices": {
       "api": {
-        "id": "/subscriptions/0f3ae6f5-ea70-4968-a345-b293198b61df/providers/Microsoft.Web/locations/centralus/managedApis/visualstudioteamservices"
+        "id": "/subscriptions/0f3ae6f5-ea70-4968-a345-b293198b61df/providers/Microsoft.Web/locations/centralindia/managedApis/visualstudioteamservices"
       },
       "connection": {
-        "id": "/subscriptions/0f3ae6f5-ea70-4968-a345-b293198b61df/resourceGroups/PnG_terraform_testing/providers/Microsoft.Web/connections/visualstudioteamservices"
+        "id": "/subscriptions/0f3ae6f5-ea70-4968-a345-b293198b61df/resourceGroups/PnG_terraform_testing/providers/Microsoft.Web/connections/visualstudioteamservices-3"
       },
-      "connectionRuntimeUrl": "https://e8132ee1cf00d889.09.common.logic-centralus.azure-apihub.net/apim/visualstudioteamservices/f9afca77ab1b46c68ff03074ec315d2b",
+      "connectionRuntimeUrl": "https://e8132ee1cf00d889.09.common.logic-centralindia.azure-apihub.net/apim/visualstudioteamservices/0edc39b5395f42199f637f97a4a3e3c1",
       "authentication": {
         "type": "ManagedServiceIdentity"
       }
+    },
+    "office365": {
+      "api": {
+        "id": "/subscriptions/0f3ae6f5-ea70-4968-a345-b293198b61df/providers/Microsoft.Web/locations/centralindia/managedApis/office365"
+      },
+      "connection": {
+        "id": "/subscriptions/0f3ae6f5-ea70-4968-a345-b293198b61df/resourceGroups/PnG_terraform_testing/providers/Microsoft.Web/connections/office365"
+      },
+      "connectionRuntimeUrl": "https://e8132ee1cf00d889.09.common.logic-centralindia.azure-apihub.net/apim/office365/48bd66e93b07469389846dab56b2d1c4",
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      }
+    }
+  },
+  "functionConnections": {
+    "azureFunctionOperation": {
+      "function": {
+        "id": "/subscriptions/0f3ae6f5-ea70-4968-a345-b293198b61df/resourceGroups/RG-PnGAutomation/providers/Microsoft.Web/sites/DevOpsProjectCreation/functions/DevopsPrjCreation"
+      },
+      "triggerUrl": "https://devopsprojectcreation.azurewebsites.net/api/devopsprjcreation",
+      "authentication": {
+        "type": "QueryString",
+        "name": "Code",
+        "value": "@appsetting('azureFunctionOperation_functionAppKey')"
+      },
+      "displayName": "DevOps_Prj_Creation"
     }
   }
 }

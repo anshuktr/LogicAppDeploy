@@ -1,0 +1,14 @@
+{
+  "Master_Project_Name": {
+    "type": "String",
+    "value": "Alpha Project"
+  },
+  "Organization_Name": {
+    "type": "String",
+    "value": "AzureTest-Alpha"
+  },
+  "prj_name": {
+    "type": "String",
+    "value": "intake-test-24nov_MDF_UC_2091723"
+  }
+}

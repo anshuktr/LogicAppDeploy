@@ -1,0 +1,445 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Error_Response": {
+        "inputs": {
+          "body": {
+            "Result": "Error",
+            "WorkflowId": "@workflow()['run']['name']",
+            "WorkflowName": "@workflow()['name']"
+          },
+          "statusCode": 200
+        },
+        "kind": "Http",
+        "runAfter": {
+          "Scope": [
+            "Failed"
+          ]
+        },
+        "type": "Response"
+      },
+      "Scope": {
+        "actions": {
+          "Switch_CopyWorkItemType": {
+            "cases": {
+              "Epic": {
+                "actions": {
+                  "Create_Epic": {
+                    "inputs": {
+                      "body": {
+                        "area": "@{triggerBody()?['AreaPath']}",
+                        "description": "<p>@{triggerBody()?['Description']}.</p>",
+                        "dynamicFields": {
+                          "Microsoft.VSTS.Common.ValueArea": "@{triggerBody()?['ValueArea']}",
+                          "System.Tags": "@{triggerBody()?['AppName']}"
+                        },
+                        "iteration": "@{triggerBody()?['IterationPath']}",
+                        "linkType": "Hierarchy-reverse",
+                        "linkUrl": "@{triggerBody()?['URL']}",
+                        "priority": "@triggerBody()?['Priority']",
+                        "title": "@{triggerBody()?['Title']}",
+                        "userEnteredFields": {
+                          "Automation Log": "@{concat(formatDateTime(utcNow(),'yy-MM-dd HH:mm'),' UTC: User Story Created by Run ID: ',workflow()['run']['name'],' of Logic App: ',workflow()['name'])}",
+                          "History": "Work Item Copied from # @{triggerBody()?['ID']}",
+                          "Stack Rank": "@{triggerBody()?['StackRank']}",
+                          "Tags": "@{triggerBody()?['Tags']}"
+                        }
+                      },
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "patch",
+                      "path": "/@{encodeURIComponent(parameters('prj_name'))}/_apis/wit/workitems/$@{encodeURIComponent('Epic')}",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')"
+                      }
+                    },
+                    "runAfter": {},
+                    "type": "ApiConnection"
+                  },
+                  "Response_Epic": {
+                    "inputs": {
+                      "body": {
+                        "Result": "Complete",
+                        "URL": "@body('Create_Epic')?['url']",
+                        "WorkItemType": "User Story",
+                        "WorkflowId": "@workflow()['run']['name']",
+                        "WorkflowName": "@workflow()['name']"
+                      },
+                      "statusCode": 200
+                    },
+                    "kind": "Http",
+                    "runAfter": {
+                      "Create_Epic": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Response"
+                  }
+                },
+                "case": "Epic"
+              },
+              "Feature": {
+                "actions": {
+                  "Create_Feature": {
+                    "inputs": {
+                      "body": {
+                        "area": "@{triggerBody()?['AreaPath']}",
+                        "description": "@{triggerBody()?['Description']}",
+                        "dynamicFields": {
+                          "Microsoft.VSTS.Common.ValueArea": "@{triggerBody()?['ValueArea']}",
+                          "System.Tags": "@{triggerBody()?['AppName']}"
+                        },
+                        "iteration": "@{triggerBody()?['IterationPath']}",
+                        "linkType": "Hierarchy-reverse",
+                        "linkUrl": "@{triggerBody()?['URL']}",
+                        "priority": "@triggerBody()?['Priority']",
+                        "title": "@{triggerBody()?['Title']}",
+                        "userEnteredFields": {
+                          "Automation Log": "@{concat(formatDateTime(utcNow(),'yy-MM-dd HH:mm'),' UTC: Feature Created by Run ID: ',workflow()['run']['name'],' of Logic App: ',workflow()['name'])}",
+                          "History": "Work Item Copied from # @{triggerBody()?['ID']}",
+                          "Stack Rank": "@{triggerBody()?['StackRank']}",
+                          "Tags": "@{triggerBody()?['Tags']}"
+                        }
+                      },
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "patch",
+                      "path": "/@{encodeURIComponent(parameters('prj_name'))}/_apis/wit/workitems/$@{encodeURIComponent('Feature')}",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')"
+                      }
+                    },
+                    "runAfter": {},
+                    "type": "ApiConnection"
+                  },
+                  "Response_Feature": {
+                    "inputs": {
+                      "body": {
+                        "Result": "Complete",
+                        "URL": "@body('Create_Feature')?['url']",
+                        "WorkItemType": "Feature",
+                        "WorkflowId": "@workflow()['run']['name']",
+                        "WorkflowName": "@workflow()['name']"
+                      },
+                      "statusCode": 200
+                    },
+                    "kind": "Http",
+                    "runAfter": {
+                      "Create_Feature": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Response"
+                  }
+                },
+                "case": "Feature"
+              },
+              "Line": {
+                "actions": {
+                  "Create_Line": {
+                    "inputs": {
+                      "body": {
+                        "area": "@{triggerBody()?['AreaPath']}",
+                        "description": "<p>@{triggerBody()?['Description']}.</p>",
+                        "dynamicFields": {
+                          "System.Tags": "@{triggerBody()?['AppName']}"
+                        },
+                        "iteration": "@{triggerBody()?['IterationPath']}",
+                        "linkType": "Hierarchy-reverse",
+                        "linkUrl": "@{triggerBody()?['URL']}",
+                        "priority": "@triggerBody()?['Priority']",
+                        "title": "@{triggerBody()?['Title']}",
+                        "userEnteredFields": {
+                          "History": "Work Item Copied from # @{triggerBody()?['ID']}",
+                          "Stack Rank": "@{triggerBody()?['StackRank']}",
+                          "Tags": "@{triggerBody()?['Tags']}"
+                        }
+                      },
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "patch",
+                      "path": "/@{encodeURIComponent(parameters('prj_name'))}/_apis/wit/workitems/$@{encodeURIComponent('Line')}",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')"
+                      }
+                    },
+                    "runAfter": {},
+                    "type": "ApiConnection"
+                  },
+                  "Response_Line": {
+                    "inputs": {
+                      "body": {
+                        "Result": "Complete",
+                        "URL": "@body('Create_Line')?['url']",
+                        "WorkItemType": "User Story",
+                        "WorkflowId": "@workflow()['run']['name']",
+                        "WorkflowName": "@workflow()['name']"
+                      },
+                      "statusCode": 200
+                    },
+                    "kind": "Http",
+                    "runAfter": {
+                      "Create_Line": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Response"
+                  }
+                },
+                "case": "Line"
+              },
+              "Site": {
+                "actions": {
+                  "Create_Site": {
+                    "inputs": {
+                      "body": {
+                        "area": "@{triggerBody()?['AreaPath']}",
+                        "description": "<p>@{triggerBody()?['Description']}.</p>",
+                        "iteration": "@{triggerBody()?['IterationPath']}",
+                        "linkType": "Hierarchy-reverse",
+                        "linkUrl": "@{triggerBody()?['URL']}",
+                        "priority": "@triggerBody()?['Priority']",
+                        "title": "@{triggerBody()?['Title']}",
+                        "userEnteredFields": {
+                          "History": "Work Item Copied from # @{triggerBody()?['ID']}",
+                          "Stack Rank": "@{triggerBody()?['StackRank']}",
+                          "Tags": "@{triggerBody()?['Tags']}"
+                        }
+                      },
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "patch",
+                      "path": "/@{encodeURIComponent(parameters('prj_name'))}/_apis/wit/workitems/$@{encodeURIComponent('Site')}",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')"
+                      }
+                    },
+                    "runAfter": {},
+                    "type": "ApiConnection"
+                  },
+                  "Response_Site": {
+                    "inputs": {
+                      "body": {
+                        "Result": "Complete",
+                        "URL": "@body('Create_Site')?['url']",
+                        "WorkItemType": "User Story",
+                        "WorkflowId": "@workflow()['run']['name']",
+                        "WorkflowName": "@workflow()['name']"
+                      },
+                      "statusCode": 200
+                    },
+                    "kind": "Http",
+                    "runAfter": {
+                      "Create_Site": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Response"
+                  }
+                },
+                "case": "Site"
+              },
+              "Task": {
+                "actions": {
+                  "Create_Task": {
+                    "inputs": {
+                      "body": {
+                        "area": "@{triggerBody()?['AreaPath']}",
+                        "description": "@{triggerBody()?['Description']}",
+                        "dynamicFields": {
+                          "System.Tags": "@{triggerBody()?['AppName']}"
+                        },
+                        "iteration": "@{triggerBody()?['IterationPath']}",
+                        "linkType": "Hierarchy-reverse",
+                        "linkUrl": "@{triggerBody()?['URL']}",
+                        "priority": "@triggerBody()?['Priority']",
+                        "title": "@{triggerBody()?['Title']}",
+                        "userEnteredFields": {
+                          "Automation Log": "@{concat(formatDateTime(utcNow(),'yy-MM-dd HH:mm'),' UTC: Task Created by Run ID: ',workflow()['run']['name'],' of Logic App: ',workflow()['name'])}",
+                          "History": "Copied from Work Item # @{triggerBody()?['ID']}",
+                          "Stack Rank": "@{triggerBody()?['StackRank']}",
+                          "Tags": "@{triggerBody()?['Tags']}"
+                        }
+                      },
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "patch",
+                      "path": "/@{encodeURIComponent(parameters('prj_name'))}/_apis/wit/workitems/$@{encodeURIComponent('Task')}",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')"
+                      }
+                    },
+                    "runAfter": {},
+                    "type": "ApiConnection"
+                  },
+                  "Response_Task": {
+                    "inputs": {
+                      "body": {
+                        "Result": "Complete",
+                        "WorkItemType": "Task",
+                        "WorkflowId": "@workflow()['run']['name']",
+                        "WorkflowName": "@workflow()['name']"
+                      },
+                      "statusCode": 200
+                    },
+                    "kind": "Http",
+                    "runAfter": {
+                      "Create_Task": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Response"
+                  }
+                },
+                "case": "Task"
+              },
+              "User_Story": {
+                "actions": {
+                  "Create_User_Story": {
+                    "inputs": {
+                      "body": {
+                        "area": "@{triggerBody()?['AreaPath']}",
+                        "description": "<p>@{triggerBody()?['Description']}.</p>",
+                        "dynamicFields": {
+                          "Microsoft.VSTS.Common.ValueArea": "@{triggerBody()?['ValueArea']}",
+                          "System.Tags": "@{triggerBody()?['AppName']}"
+                        },
+                        "iteration": "@{triggerBody()?['IterationPath']}",
+                        "linkType": "Hierarchy-reverse",
+                        "linkUrl": "@{triggerBody()?['URL']}",
+                        "priority": "@triggerBody()?['Priority']",
+                        "title": "@{triggerBody()?['Title']}",
+                        "userEnteredFields": {
+                          "Automation Log": "@{concat(formatDateTime(utcNow(),'yy-MM-dd HH:mm'),' UTC: User Story Created by Run ID: ',workflow()['run']['name'],' of Logic App: ',workflow()['name'])}",
+                          "History": "Work Item Copied from # @{triggerBody()?['ID']}",
+                          "Stack Rank": "@{triggerBody()?['StackRank']}",
+                          "Tags": "@{triggerBody()?['Tags']}"
+                        }
+                      },
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "patch",
+                      "path": "/@{encodeURIComponent(parameters('prj_name'))}/_apis/wit/workitems/$@{encodeURIComponent('User Story')}",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')"
+                      }
+                    },
+                    "runAfter": {},
+                    "type": "ApiConnection"
+                  },
+                  "Response_User_Story": {
+                    "inputs": {
+                      "body": {
+                        "Result": "Complete",
+                        "URL": "@body('Create_User_Story')?['url']",
+                        "WorkItemType": "User Story",
+                        "WorkflowId": "@workflow()['run']['name']",
+                        "WorkflowName": "@workflow()['name']"
+                      },
+                      "statusCode": 200
+                    },
+                    "kind": "Http",
+                    "runAfter": {
+                      "Create_User_Story": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Response"
+                  }
+                },
+                "case": "User Story"
+              }
+            },
+            "default": {
+              "actions": {}
+            },
+            "expression": "@triggerBody()?['CopyItemType']",
+            "runAfter": {},
+            "type": "Switch"
+          }
+        },
+        "runAfter": {},
+        "type": "Scope"
+      },
+      "Terminate": {
+        "inputs": {
+          "runStatus": "Failed"
+        },
+        "runAfter": {
+          "Error_Response": [
+            "Succeeded"
+          ]
+        },
+        "type": "Terminate"
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "manual": {
+        "inputs": {
+          "schema": {
+            "AppName": {
+              "type": "string"
+            },
+            "AreaPath": {
+              "type": "string"
+            },
+            "CopyItemType": {
+              "type": "string"
+            },
+            "Description": {
+              "type": "string"
+            },
+            "ID": {
+              "type": "string"
+            },
+            "IterationPath": {
+              "type": "string"
+            },
+            "Priority": {
+              "type": "string"
+            },
+            "StackRank": {
+              "type": "string"
+            },
+            "Tags": {
+              "type": "string"
+            },
+            "Title": {
+              "type": "string"
+            },
+            "URL": {
+              "type": "string"
+            },
+            "ValueArea": {
+              "type": "string"
+            }
+          }
+        },
+        "kind": "Http",
+        "type": "Request"
+      }
+    }
+  },
+  "kind": "Stateful"
+}

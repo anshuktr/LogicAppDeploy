@@ -1,0 +1,3406 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Condition": {
+        "actions": {
+          "Create_a_UC-Template": {
+            "inputs": {
+              "body": {
+                "area": "@variables('Innovation_Area_Path')",
+                "iteration": "@{variables('Target_Project_Name')}\\\\Iteration 1",
+                "title": "[Use Case Name] Innovation - Template",
+                "userEnteredFields": {
+                  "Tags": "innovation-template"
+                }
+              },
+              "host": {
+                "connection": {
+                  "referenceName": "visualstudioteamservices"
+                }
+              },
+              "method": "patch",
+              "path": "/@{encodeURIComponent(variables('Target_Project_Name'))}/_apis/wit/workitems/$@{encodeURIComponent('Use Case Innovation')}",
+              "queries": {
+                "account": "@parameters('Organization_Name')"
+              }
+            },
+            "runAfter": {
+              "Set_Innovation_Area_Path": [
+                "Succeeded"
+              ]
+            },
+            "type": "ApiConnection"
+          },
+          "Create_a_UC_Innovation": {
+            "inputs": {
+              "body": {
+                "area": "@variables('Innovation_Area_Path')",
+                "iteration": "@{variables('Target_Project_Name')}\\\\Iteration 1",
+                "title": "@variables('Target_Project_Name')",
+                "userEnteredFields": {
+                  "Area": "@body('Get_work_item_details')?['fields']?['Custom_Area']",
+                  "Business Unit PM": "@body('Get_work_item_details')?['fields']?['Custom_BusinessUnitPM']",
+                  "GBS PM": "@body('Get_work_item_details')?['fields']?['Custom_GBSPM']",
+                  "Phase": "@body('Get_work_item_details')?['fields']?['Custom_UseCasePhase']",
+                  "Use Case Number": "@body('Get_work_item_details')?['fields']?['Custom_UseCaseNumber']"
+                }
+              },
+              "host": {
+                "connection": {
+                  "referenceName": "visualstudioteamservices"
+                }
+              },
+              "method": "patch",
+              "path": "/@{encodeURIComponent(variables('Target_Project_Name'))}/_apis/wit/workitems/$@{encodeURIComponent('Use Case Innovation')}",
+              "queries": {
+                "account": "@parameters('Organization_Name')"
+              }
+            },
+            "runAfter": {
+              "Set_Innovation_Area_Path": [
+                "Succeeded"
+              ]
+            },
+            "type": "ApiConnection"
+          },
+          "Create_a_UC_Scale": {
+            "inputs": {
+              "body": {
+                "area": "@variables('Scale_Area_Path')",
+                "iteration": "@{variables('Target_Project_Name')}\\\\Iteration 1",
+                "title": "[Use Case Name] Scale - Template",
+                "userEnteredFields": {
+                  "Tags": "scale-template"
+                }
+              },
+              "host": {
+                "connection": {
+                  "referenceName": "visualstudioteamservices"
+                }
+              },
+              "method": "patch",
+              "path": "/@{encodeURIComponent(variables('Target_Project_Name'))}/_apis/wit/workitems/$@{encodeURIComponent('Use Case Scale')}",
+              "queries": {
+                "account": "@parameters('Organization_Name')"
+              }
+            },
+            "runAfter": {
+              "Set_Innovation_Area_Path": [
+                "Succeeded"
+              ]
+            },
+            "type": "ApiConnection"
+          },
+          "Dashboard_Creation_Function": {
+            "inputs": {
+              "authentication": {
+                "audience": "9d7d39d4-9f70-471d-849f-7bde193ae709",
+                "type": "ManagedServiceIdentity"
+              },
+              "body": {
+                "name": "@{body('Get_work_item_details')?['fields']?['System_Title']}",
+                "use_case_number": "@{body('Get_work_item_details')?['fields']?['Custom_UseCaseNumber']}"
+              },
+              "method": "POST",
+              "uri": "https://devopsprojectcreation.azurewebsites.net/api/Dashboards_Creation?"
+            },
+            "runAfter": {
+              "New_Project_Creation_Function": [
+                "Succeeded"
+              ]
+            },
+            "type": "Http"
+          },
+          "Delay": {
+            "inputs": {
+              "interval": {
+                "count": 1,
+                "unit": "Minute"
+              }
+            },
+            "runAfter": {
+              "Dashboard_Creation_Function": [
+                "Succeeded"
+              ]
+            },
+            "type": "Wait"
+          },
+          "For_each_UCI-Template": {
+            "actions": {
+              "For_each_Epic_in_UCI-Template": {
+                "actions": {
+                  "Compose_HTTP_request_for_Epic_in_UCI-Template": {
+                    "inputs": {
+                      "AreaPath": "@variables('Innovation_Area_Path')",
+                      "CopyItemType": "Epic",
+                      "Description": "@items('For_each_Epic_in_UCI-Template')?['System.Description']",
+                      "ID": "@items('For_each_Epic_in_UCI-Template')?['System.Id']",
+                      "IterationPath": "@body('Create_a_UC-Template')?['fields']?['System_IterationPath']",
+                      "StackRank": "@items('For_each_Epic_in_UCI-Template')?['Microsoft.VSTS.Common.StackRank']",
+                      "Title": "@items('For_each_Epic_in_UCI-Template')?['System.Title']",
+                      "URL": "@body('Create_a_UC-Template')?['url']",
+                      "ValueArea": "@items('For_each_Epic_in_UCI-Template')?['Microsoft.VSTS.Common.ValueArea']"
+                    },
+                    "runAfter": {},
+                    "type": "Compose"
+                  },
+                  "For_each_Feature_in_Epic_in_UCI-Template": {
+                    "actions": {
+                      "Compose_HTTP_Feature_in_Epic_in_UCI-Template": {
+                        "inputs": {
+                          "AreaPath": "@variables('Innovation_Area_Path')",
+                          "CopyItemType": "Feature",
+                          "Description": "@items('For_each_Feature_in_Epic_in_UCI-Template')?['System.Description']",
+                          "ID": "@items('For_each_Feature_in_Epic_in_UCI-Template')?['System.Id']",
+                          "IterationPath": "@body('Create_a_UC-Template')?['fields']?['System_IterationPath']",
+                          "StackRank": "@items('For_each_Feature_in_Epic_in_UCI-Template')?['Microsoft.VSTS.Common.StackRank']",
+                          "Title": "@items('For_each_Feature_in_Epic_in_UCI-Template')?['System.Title']",
+                          "URL": "@body('Parse_JSON_response_for_Epic_in_UCI-Template')?['URL']",
+                          "ValueArea": "@items('For_each_Feature_in_Epic_in_UCI-Template')?['Microsoft.VSTS.Common.ValueArea']"
+                        },
+                        "runAfter": {},
+                        "type": "Compose"
+                      },
+                      "For_each_User_Story_in_Feature_in_Epic_in_UCI-Template": {
+                        "actions": {
+                          "Compose_User_Story_in_Feature_in_Epic_in_UCI-Template": {
+                            "inputs": {
+                              "AreaPath": "@variables('Innovation_Area_Path')",
+                              "CopyItemType": "User Story",
+                              "Description": "@items('For_each_User_Story_in_Feature_in_Epic_in_UCI-Template')?['System.Description']",
+                              "ID": "@items('For_each_User_Story_in_Feature_in_Epic_in_UCI-Template')?['System.Id']",
+                              "IterationPath": "@body('Create_a_UC-Template')?['fields']?['System_IterationPath']",
+                              "StackRank": "@items('For_each_User_Story_in_Feature_in_Epic_in_UCI-Template')?['Microsoft.VSTS.Common.StackRank']",
+                              "Title": "@items('For_each_User_Story_in_Feature_in_Epic_in_UCI-Template')?['System.Title']",
+                              "URL": "@body('Parse_JSON_creation_response_for_Feature_in_Epic_in_UCI-Template')?['URL']",
+                              "ValueArea": "@items('For_each_User_Story_in_Feature_in_Epic_in_UCI-Template')?['Microsoft.VSTS.Common.ValueArea']"
+                            },
+                            "runAfter": {},
+                            "type": "Compose"
+                          },
+                          "For_each_Task_from_User_Story_in_Feature-Epic-UCI-Template": {
+                            "actions": {
+                              "Compose_Task_from_User_Story_in_Feature-Epic-UCI-Template": {
+                                "inputs": {
+                                  "AreaPath": "@variables('Innovation_Area_Path')",
+                                  "CopyItemType": "Task",
+                                  "Description": "@items('For_each_Task_from_User_Story_in_Feature-Epic-UCI-Template')?['System.Description']",
+                                  "ID": "@items('For_each_Task_from_User_Story_in_Feature-Epic-UCI-Template')?['System.Id']",
+                                  "IterationPath": "@body('Create_a_UC-Template')?['fields']?['System_IterationPath']",
+                                  "StackRank": "@items('For_each_Task_from_User_Story_in_Feature-Epic-UCI-Template')?['Microsoft.VSTS.Common.StackRank']",
+                                  "Title": "@items('For_each_Task_from_User_Story_in_Feature-Epic-UCI-Template')?['System.Title']",
+                                  "URL": "@body('Parse_JSON_User_Story_in_Feature_in_Epic_in_UCI-Template')?['URL']",
+                                  "ValueArea": "@items('For_each_User_Story_in_Feature_in_Epic_in_UCI-Template')?['Microsoft.VSTS.Common.ValueArea']"
+                                },
+                                "runAfter": {},
+                                "type": "Compose"
+                              },
+                              "HTTP-Copy-Children-Create-Task_from_User_Story_in_Feature-Epic-UCI-Template": {
+                                "inputs": {
+                                  "body": "@outputs('Compose_Task_from_User_Story_in_Feature-Epic-UCI-Template')",
+                                  "host": {
+                                    "workflow": {
+                                      "id": "http-copy-children-create-wi"
+                                    }
+                                  }
+                                },
+                                "runAfter": {
+                                  "Compose_Task_from_User_Story_in_Feature-Epic-UCI-Template": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "type": "Workflow"
+                              },
+                              "Parse_JSON_Task_from_User_Story_in_Feature-Epic-UCI-Template": {
+                                "inputs": {
+                                  "content": "@body('HTTP-Copy-Children-Create-Task_from_User_Story_in_Feature-Epic-UCI-Template')",
+                                  "schema": {
+                                    "properties": {
+                                      "Result": {
+                                        "type": "string"
+                                      },
+                                      "URL": {
+                                        "type": "string"
+                                      },
+                                      "WorkItemType": {
+                                        "type": "string"
+                                      },
+                                      "WorkflowId": {
+                                        "type": "string"
+                                      },
+                                      "WorkflowName": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  }
+                                },
+                                "runAfter": {
+                                  "HTTP-Copy-Children-Create-Task_from_User_Story_in_Feature-Epic-UCI-Template": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "type": "ParseJson"
+                              }
+                            },
+                            "foreach": "@body('Get_Task_from_User_Story_in_Feature-Epic-UCI-Template')?['value']",
+                            "runAfter": {
+                              "Get_Task_from_User_Story_in_Feature-Epic-UCI-Template": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Foreach"
+                          },
+                          "Get_Task_from_User_Story_in_Feature-Epic-UCI-Template": {
+                            "inputs": {
+                              "host": {
+                                "connection": {
+                                  "referenceName": "visualstudioteamservices"
+                                }
+                              },
+                              "method": "get",
+                              "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_User_Story_in_Feature_in_Epic_in_UCI-Template')?['System.Id'])}/children",
+                              "queries": {
+                                "account": "@parameters('Organization_Name')",
+                                "project": "@parameters('Master_Project_Name')",
+                                "workItemType": "Task"
+                              }
+                            },
+                            "runAfter": {
+                              "Parse_JSON_User_Story_in_Feature_in_Epic_in_UCI-Template": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ApiConnection"
+                          },
+                          "HTTP-Copy-Children-Create-User_Story_in_Feature_in_Epic_in_UCI-Template": {
+                            "inputs": {
+                              "body": "@outputs('Compose_User_Story_in_Feature_in_Epic_in_UCI-Template')",
+                              "host": {
+                                "workflow": {
+                                  "id": "http-copy-children-create-wi"
+                                }
+                              }
+                            },
+                            "runAfter": {
+                              "Compose_User_Story_in_Feature_in_Epic_in_UCI-Template": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Workflow"
+                          },
+                          "Parse_JSON_User_Story_in_Feature_in_Epic_in_UCI-Template": {
+                            "inputs": {
+                              "content": "@body('HTTP-Copy-Children-Create-User_Story_in_Feature_in_Epic_in_UCI-Template')",
+                              "schema": {
+                                "properties": {
+                                  "Result": {
+                                    "type": "string"
+                                  },
+                                  "URL": {
+                                    "type": "string"
+                                  },
+                                  "WorkItemType": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowId": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowName": {
+                                    "type": "string"
+                                  }
+                                },
+                                "type": "object"
+                              }
+                            },
+                            "runAfter": {
+                              "HTTP-Copy-Children-Create-User_Story_in_Feature_in_Epic_in_UCI-Template": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ParseJson"
+                          }
+                        },
+                        "foreach": "@body('Get_User_story_from_feature_in_Epic_in_UCI-Template')?['value']",
+                        "runAfter": {
+                          "Get_User_story_from_feature_in_Epic_in_UCI-Template": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Foreach"
+                      },
+                      "Get_User_story_from_feature_in_Epic_in_UCI-Template": {
+                        "inputs": {
+                          "host": {
+                            "connection": {
+                              "referenceName": "visualstudioteamservices"
+                            }
+                          },
+                          "method": "get",
+                          "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Feature_in_Epic_in_UCI-Template')?['System.Id'])}/children",
+                          "queries": {
+                            "account": "@parameters('Organization_Name')",
+                            "project": "@parameters('Master_Project_Name')",
+                            "workItemType": "User Story"
+                          }
+                        },
+                        "runAfter": {
+                          "Parse_JSON_creation_response_for_Feature_in_Epic_in_UCI-Template": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ApiConnection"
+                      },
+                      "HTTP-Copy-Children-Create-Feature_in_Epic_in_UCI-Template": {
+                        "inputs": {
+                          "body": "@outputs('Compose_HTTP_Feature_in_Epic_in_UCI-Template')",
+                          "host": {
+                            "workflow": {
+                              "id": "http-copy-children-create-wi"
+                            }
+                          }
+                        },
+                        "runAfter": {
+                          "Compose_HTTP_Feature_in_Epic_in_UCI-Template": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Workflow"
+                      },
+                      "Parse_JSON_creation_response_for_Feature_in_Epic_in_UCI-Template": {
+                        "inputs": {
+                          "content": "@body('HTTP-Copy-Children-Create-Feature_in_Epic_in_UCI-Template')",
+                          "schema": {
+                            "properties": {
+                              "Result": {
+                                "type": "string"
+                              },
+                              "URL": {
+                                "type": "string"
+                              },
+                              "WorkItemType": {
+                                "type": "string"
+                              },
+                              "WorkflowId": {
+                                "type": "string"
+                              },
+                              "WorkflowName": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "runAfter": {
+                          "HTTP-Copy-Children-Create-Feature_in_Epic_in_UCI-Template": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ParseJson"
+                      }
+                    },
+                    "foreach": "@body('Get_Feature_from_Epic_in_UCI-Template')?['value']",
+                    "runAfter": {
+                      "Get_Feature_from_Epic_in_UCI-Template": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Foreach"
+                  },
+                  "Get_Feature_from_Epic_in_UCI-Template": {
+                    "inputs": {
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "get",
+                      "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Epic_in_UCI-Template')?['System.Id'])}/children",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')",
+                        "project": "@parameters('Master_Project_Name')",
+                        "workItemType": "Feature"
+                      }
+                    },
+                    "runAfter": {
+                      "Parse_JSON_response_for_Epic_in_UCI-Template": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ApiConnection"
+                  },
+                  "HTTP-Copy-Children-Create-Epic_in_UCI-Template": {
+                    "inputs": {
+                      "body": "@outputs('Compose_HTTP_request_for_Epic_in_UCI-Template')",
+                      "host": {
+                        "workflow": {
+                          "id": "http-copy-children-create-wi"
+                        }
+                      }
+                    },
+                    "runAfter": {
+                      "Compose_HTTP_request_for_Epic_in_UCI-Template": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Workflow"
+                  },
+                  "Parse_JSON_response_for_Epic_in_UCI-Template": {
+                    "inputs": {
+                      "content": "@body('HTTP-Copy-Children-Create-Epic_in_UCI-Template')",
+                      "schema": {
+                        "properties": {
+                          "Result": {
+                            "type": "string"
+                          },
+                          "URL": {
+                            "type": "string"
+                          },
+                          "WorkItemType": {
+                            "type": "string"
+                          },
+                          "WorkflowId": {
+                            "type": "string"
+                          },
+                          "WorkflowName": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "runAfter": {
+                      "HTTP-Copy-Children-Create-Epic_in_UCI-Template": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ParseJson"
+                  }
+                },
+                "foreach": "@body('Get_Epics_from_UCI-Template')?['value']",
+                "runAfter": {
+                  "Get_Epics_from_UCI-Template": [
+                    "Succeeded"
+                  ]
+                },
+                "type": "Foreach"
+              },
+              "For_each_Site_in_UCI-Template": {
+                "actions": {
+                  "Compose_Site_in_UCI-Template": {
+                    "inputs": {
+                      "AreaPath": "@variables('Innovation_Area_Path')",
+                      "CopyItemType": "Site",
+                      "Description": "@items('For_each_Site_in_UCI-Template')?['System.Description']",
+                      "ID": "@items('For_each_Site_in_UCI-Template')?['System.Id']",
+                      "IterationPath": "@body('Create_a_UC-Template')?['fields']?['System_IterationPath']",
+                      "StackRank": "@items('For_each_Site_in_UCI-Template')?['Microsoft.VSTS.Common.StackRank']",
+                      "Tags": "innovation-site-template",
+                      "Title": "@items('For_each_Site_in_UCI-Template')?['System.Title']",
+                      "URL": "@body('Create_a_UC-Template')?['url']"
+                    },
+                    "runAfter": {},
+                    "type": "Compose"
+                  },
+                  "For_each_Feature_from_Site_in_UCI-Template": {
+                    "actions": {
+                      "Compose_Feature_from_Site_in_UCI-Template": {
+                        "inputs": {
+                          "AreaPath": "@variables('Innovation_Area_Path')",
+                          "CopyItemType": "Feature",
+                          "Description": "@items('For_each_Feature_from_Site_in_UCI-Template')?['System.Description']",
+                          "ID": "@items('For_each_Feature_from_Site_in_UCI-Template')?['System.Id']",
+                          "IterationPath": "@body('Create_a_UC-Template')?['fields']?['System_IterationPath']",
+                          "StackRank": "@items('For_each_Feature_from_Site_in_UCI-Template')?['Microsoft.VSTS.Common.StackRank']",
+                          "Title": "@items('For_each_Feature_from_Site_in_UCI-Template')?['System.Title']",
+                          "URL": "@body('Parse_JSON_site_creation_response_in_UCI_Template')?['URL']",
+                          "ValueArea": "@items('For_each_Feature_from_Site_in_UCI-Template')?['Microsoft.VSTS.Common.ValueArea']"
+                        },
+                        "runAfter": {},
+                        "type": "Compose"
+                      },
+                      "For_each_user_story_from_Feature_in_Site_in_UCI-Template": {
+                        "actions": {
+                          "Compose_user_story_from_Feature_in_Site_in_UCI-Template": {
+                            "inputs": {
+                              "AreaPath": "@variables('Innovation_Area_Path')",
+                              "CopyItemType": "User Story",
+                              "Description": "@items('For_each_user_story_from_Feature_in_Site_in_UCI-Template')?['System.Description']",
+                              "ID": "@items('For_each_user_story_from_Feature_in_Site_in_UCI-Template')?['System.Id']",
+                              "IterationPath": "@body('Create_a_UC-Template')?['fields']?['System_IterationPath']",
+                              "StackRank": "@items('For_each_user_story_from_Feature_in_Site_in_UCI-Template')?['Microsoft.VSTS.Common.StackRank']",
+                              "Title": "@items('For_each_user_story_from_Feature_in_Site_in_UCI-Template')?['System.Title']",
+                              "URL": "@body('Parse_JSON_Feature_from_Site_in_UCI-Template')?['URL']",
+                              "ValueArea": "@items('For_each_user_story_from_Feature_in_Site_in_UCI-Template')?['Microsoft.VSTS.Common.ValueArea']"
+                            },
+                            "runAfter": {},
+                            "type": "Compose"
+                          },
+                          "For_each_Get_Task_from_user_story_in_Feature-site-uci-template": {
+                            "actions": {
+                              "Compose_Task_from_user_story_in_Feature-site-UCI-template": {
+                                "inputs": {
+                                  "AreaPath": "@variables('Innovation_Area_Path')",
+                                  "CopyItemType": "Task",
+                                  "Description": "@items('For_each_Get_Task_from_user_story_in_Feature-site-uci-template')?['System.Description']",
+                                  "ID": "@items('For_each_Get_Task_from_user_story_in_Feature-site-uci-template')?['System.Id']",
+                                  "IterationPath": "@body('Create_a_UC-Template')?['fields']?['System_IterationPath']",
+                                  "StackRank": "@items('For_each_Get_Task_from_user_story_in_Feature-site-uci-template')?['Microsoft.VSTS.Common.StackRank']",
+                                  "Title": "@items('For_each_Get_Task_from_user_story_in_Feature-site-uci-template')?['System.Title']",
+                                  "URL": "@body('Parse_JSON_user_story_from_Feature_in_Site_in_UCI-Template')?['URL']",
+                                  "ValueArea": "@items('For_each_user_story_from_Feature_in_Site_in_UCI-Template')?['Microsoft.VSTS.Common.ValueArea']"
+                                },
+                                "runAfter": {},
+                                "type": "Compose"
+                              },
+                              "HTTP-Copy-Children-Create-Task_from_user_story_in_Feature-site-UCI-template": {
+                                "inputs": {
+                                  "body": "@outputs('Compose_Task_from_user_story_in_Feature-site-UCI-template')",
+                                  "host": {
+                                    "workflow": {
+                                      "id": "http-copy-children-create-wi"
+                                    }
+                                  }
+                                },
+                                "runAfter": {
+                                  "Compose_Task_from_user_story_in_Feature-site-UCI-template": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "type": "Workflow"
+                              },
+                              "Parse_JSON_Task_from_user_story_in_Feature-site-UCI-template": {
+                                "inputs": {
+                                  "content": "@body('HTTP-Copy-Children-Create-Task_from_user_story_in_Feature-site-UCI-template')",
+                                  "schema": {
+                                    "properties": {
+                                      "Result": {
+                                        "type": "string"
+                                      },
+                                      "URL": {
+                                        "type": "string"
+                                      },
+                                      "WorkItemType": {
+                                        "type": "string"
+                                      },
+                                      "WorkflowId": {
+                                        "type": "string"
+                                      },
+                                      "WorkflowName": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  }
+                                },
+                                "runAfter": {
+                                  "HTTP-Copy-Children-Create-Task_from_user_story_in_Feature-site-UCI-template": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "type": "ParseJson"
+                              }
+                            },
+                            "foreach": "@body('Get_Task_from_user_story_in_Feature-site-UCI-template')?['value']",
+                            "runAfter": {
+                              "Get_Task_from_user_story_in_Feature-site-UCI-template": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Foreach"
+                          },
+                          "Get_Task_from_user_story_in_Feature-site-UCI-template": {
+                            "inputs": {
+                              "host": {
+                                "connection": {
+                                  "referenceName": "visualstudioteamservices"
+                                }
+                              },
+                              "method": "get",
+                              "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_user_story_from_Feature_in_Site_in_UCI-Template')?['System.Id'])}/children",
+                              "queries": {
+                                "account": "@parameters('Organization_Name')",
+                                "project": "@parameters('Master_Project_Name')",
+                                "workItemType": "Task"
+                              }
+                            },
+                            "runAfter": {
+                              "Parse_JSON_user_story_from_Feature_in_Site_in_UCI-Template": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ApiConnection"
+                          },
+                          "HTTP-Copy-Children-Create-user_story_from_Feature_in_Site_in_UCI-Template": {
+                            "inputs": {
+                              "body": "@outputs('Compose_user_story_from_Feature_in_Site_in_UCI-Template')",
+                              "host": {
+                                "workflow": {
+                                  "id": "http-copy-children-create-wi"
+                                }
+                              }
+                            },
+                            "runAfter": {
+                              "Compose_user_story_from_Feature_in_Site_in_UCI-Template": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Workflow"
+                          },
+                          "Parse_JSON_user_story_from_Feature_in_Site_in_UCI-Template": {
+                            "inputs": {
+                              "content": "@body('HTTP-Copy-Children-Create-user_story_from_Feature_in_Site_in_UCI-Template')",
+                              "schema": {
+                                "properties": {
+                                  "Result": {
+                                    "type": "string"
+                                  },
+                                  "URL": {
+                                    "type": "string"
+                                  },
+                                  "WorkItemType": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowId": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowName": {
+                                    "type": "string"
+                                  }
+                                },
+                                "type": "object"
+                              }
+                            },
+                            "runAfter": {
+                              "HTTP-Copy-Children-Create-user_story_from_Feature_in_Site_in_UCI-Template": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ParseJson"
+                          }
+                        },
+                        "foreach": "@body('Get_User_stories_from_feature_in_uci-template')?['value']",
+                        "runAfter": {
+                          "Get_User_stories_from_feature_in_uci-template": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Foreach"
+                      },
+                      "Get_User_stories_from_feature_in_uci-template": {
+                        "inputs": {
+                          "host": {
+                            "connection": {
+                              "referenceName": "visualstudioteamservices"
+                            }
+                          },
+                          "method": "get",
+                          "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Feature_from_Site_in_UCI-Template')?['System.Id'])}/children",
+                          "queries": {
+                            "account": "@parameters('Organization_Name')",
+                            "project": "@parameters('Master_Project_Name')",
+                            "workItemType": "User Story"
+                          }
+                        },
+                        "runAfter": {
+                          "Parse_JSON_Feature_from_Site_in_UCI-Template": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ApiConnection"
+                      },
+                      "HTTP-Copy-Children-Create-Feature_from_Site_in_UCI-Template": {
+                        "inputs": {
+                          "body": "@outputs('Compose_Feature_from_Site_in_UCI-Template')",
+                          "host": {
+                            "workflow": {
+                              "id": "http-copy-children-create-wi"
+                            }
+                          }
+                        },
+                        "runAfter": {
+                          "Compose_Feature_from_Site_in_UCI-Template": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Workflow"
+                      },
+                      "Parse_JSON_Feature_from_Site_in_UCI-Template": {
+                        "inputs": {
+                          "content": "@body('HTTP-Copy-Children-Create-Feature_from_Site_in_UCI-Template')",
+                          "schema": {
+                            "properties": {
+                              "Result": {
+                                "type": "string"
+                              },
+                              "URL": {
+                                "type": "string"
+                              },
+                              "WorkItemType": {
+                                "type": "string"
+                              },
+                              "WorkflowId": {
+                                "type": "string"
+                              },
+                              "WorkflowName": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "runAfter": {
+                          "HTTP-Copy-Children-Create-Feature_from_Site_in_UCI-Template": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ParseJson"
+                      }
+                    },
+                    "foreach": "@body('Get_Features_from_Site-UCI_Template')?['value']",
+                    "runAfter": {
+                      "Get_Features_from_Site-UCI_Template": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Foreach"
+                  },
+                  "For_each_Line_in_Site_in_UCI-Template": {
+                    "actions": {
+                      "Compose_HTTP_Line_in_Site_in_UCI-Template": {
+                        "inputs": {
+                          "AreaPath": "@variables('Innovation_Area_Path')",
+                          "CopyItemType": "Line",
+                          "Description": "@items('For_each_Line_in_Site_in_UCI-Template')?['System.Description']",
+                          "ID": "@items('For_each_Line_in_Site_in_UCI-Template')?['System.Id']",
+                          "IterationPath": "@body('Create_a_UC-Template')?['fields']?['System_IterationPath']",
+                          "StackRank": "@items('For_each_Line_in_Site_in_UCI-Template')?['Microsoft.VSTS.Common.StackRank']",
+                          "Tags": "@items('For_each_Line_in_Site_in_UCI-Template')?['System.Tags']",
+                          "Title": "@items('For_each_Line_in_Site_in_UCI-Template')?['System.Title']",
+                          "URL": "@body('Parse_JSON_site_creation_response_in_UCI_Template')?['URL']"
+                        },
+                        "runAfter": {},
+                        "type": "Compose"
+                      },
+                      "For_each_user_story_in_Line_in_Site_in_UCI-Template": {
+                        "actions": {
+                          "Compose_User_story_for_Line_in_Site_in_UCI-Template": {
+                            "inputs": {
+                              "AreaPath": "@variables('Innovation_Area_Path')",
+                              "CopyItemType": "User Story",
+                              "Description": "@items('For_each_user_story_in_Line_in_Site_in_UCI-Template')?['System.Description']",
+                              "ID": "@items('For_each_user_story_in_Line_in_Site_in_UCI-Template')?['System.Id']",
+                              "IterationPath": "@body('Create_a_UC-Template')?['fields']?['System_IterationPath']",
+                              "StackRank": "@items('For_each_user_story_in_Line_in_Site_in_UCI-Template')?['Microsoft.VSTS.Common.StackRank']",
+                              "Title": "@items('For_each_user_story_in_Line_in_Site_in_UCI-Template')?['System.Title']",
+                              "URL": "@body('Parse_JSON_Line_in_Site_in_UCI-Template')?['URL']",
+                              "ValueArea": "@items('For_each_user_story_in_Line_in_Site_in_UCI-Template')?['Microsoft.VSTS.Common.ValueArea']"
+                            },
+                            "runAfter": {},
+                            "type": "Compose"
+                          },
+                          "HTTP-Copy-Children-Create-User_story_for_Line_in_Site_in_UCI-Template": {
+                            "inputs": {
+                              "body": "@outputs('Compose_User_story_for_Line_in_Site_in_UCI-Template')",
+                              "host": {
+                                "workflow": {
+                                  "id": "http-copy-children-create-wi"
+                                }
+                              }
+                            },
+                            "runAfter": {
+                              "Compose_User_story_for_Line_in_Site_in_UCI-Template": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Workflow"
+                          },
+                          "Parse_JSON_User_story_for_Line_in_Site_in_UCI-Template": {
+                            "inputs": {
+                              "content": "@outputs('Compose_User_story_for_Line_in_Site_in_UCI-Template')",
+                              "schema": {
+                                "properties": {
+                                  "Result": {
+                                    "type": "string"
+                                  },
+                                  "URL": {
+                                    "type": "string"
+                                  },
+                                  "WorkItemType": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowId": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowName": {
+                                    "type": "string"
+                                  }
+                                },
+                                "type": "object"
+                              }
+                            },
+                            "runAfter": {
+                              "HTTP-Copy-Children-Create-User_story_for_Line_in_Site_in_UCI-Template": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ParseJson"
+                          }
+                        },
+                        "foreach": "@body('Get_User_Story_from_Line_in_Site_in_UCI-Template')?['value']",
+                        "runAfter": {
+                          "Get_User_Story_from_Line_in_Site_in_UCI-Template": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Foreach"
+                      },
+                      "Get_User_Story_from_Line_in_Site_in_UCI-Template": {
+                        "inputs": {
+                          "host": {
+                            "connection": {
+                              "referenceName": "visualstudioteamservices"
+                            }
+                          },
+                          "method": "get",
+                          "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Line_in_Site_in_UCI-Template')?['System.Id'])}/children",
+                          "queries": {
+                            "account": "@parameters('Organization_Name')",
+                            "project": "@parameters('Master_Project_Name')",
+                            "workItemType": "User Story"
+                          }
+                        },
+                        "runAfter": {
+                          "Parse_JSON_Line_in_Site_in_UCI-Template": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ApiConnection"
+                      },
+                      "HTTP-Copy-Children-Create-Line_in_Site_in_UCI-Template": {
+                        "inputs": {
+                          "body": "@outputs('Compose_HTTP_Line_in_Site_in_UCI-Template')",
+                          "host": {
+                            "workflow": {
+                              "id": "http-copy-children-create-wi"
+                            }
+                          }
+                        },
+                        "runAfter": {
+                          "Compose_HTTP_Line_in_Site_in_UCI-Template": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Workflow"
+                      },
+                      "Parse_JSON_Line_in_Site_in_UCI-Template": {
+                        "inputs": {
+                          "content": "@body('HTTP-Copy-Children-Create-Line_in_Site_in_UCI-Template')",
+                          "schema": {
+                            "properties": {
+                              "Result": {
+                                "type": "string"
+                              },
+                              "URL": {
+                                "type": "string"
+                              },
+                              "WorkItemType": {
+                                "type": "string"
+                              },
+                              "WorkflowId": {
+                                "type": "string"
+                              },
+                              "WorkflowName": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "runAfter": {
+                          "HTTP-Copy-Children-Create-Line_in_Site_in_UCI-Template": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ParseJson"
+                      }
+                    },
+                    "foreach": "@body('Get_Lines_from_Site_in_UCI-Template')?['value']",
+                    "runAfter": {
+                      "Get_Lines_from_Site_in_UCI-Template": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Foreach"
+                  },
+                  "Get_Features_from_Site-UCI_Template": {
+                    "inputs": {
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "get",
+                      "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Site_in_UCI-Template')?['System.Id'])}/children",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')",
+                        "project": "@parameters('Master_Project_Name')",
+                        "workItemType": "Feature"
+                      }
+                    },
+                    "runAfter": {
+                      "Parse_JSON_site_creation_response_in_UCI_Template": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ApiConnection"
+                  },
+                  "Get_Lines_from_Site_in_UCI-Template": {
+                    "inputs": {
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "get",
+                      "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Site_in_UCI-Template')?['System.Id'])}/children",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')",
+                        "project": "@parameters('Master_Project_Name')",
+                        "workItemType": "Line"
+                      }
+                    },
+                    "runAfter": {
+                      "For_each_Feature_from_Site_in_UCI-Template": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ApiConnection"
+                  },
+                  "HTTP-Copy-Children-Create-Site-in-UCI-Template": {
+                    "inputs": {
+                      "body": "@outputs('Compose_Site_in_UCI-Template')",
+                      "host": {
+                        "workflow": {
+                          "id": "http-copy-children-create-wi"
+                        }
+                      }
+                    },
+                    "runAfter": {
+                      "Compose_Site_in_UCI-Template": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Workflow"
+                  },
+                  "Parse_JSON_site_creation_response_in_UCI_Template": {
+                    "inputs": {
+                      "content": "@body('HTTP-Copy-Children-Create-Site-in-UCI-Template')",
+                      "schema": {
+                        "properties": {
+                          "Result": {
+                            "type": "string"
+                          },
+                          "URL": {
+                            "type": "string"
+                          },
+                          "WorkItemType": {
+                            "type": "string"
+                          },
+                          "WorkflowId": {
+                            "type": "string"
+                          },
+                          "WorkflowName": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "runAfter": {
+                      "HTTP-Copy-Children-Create-Site-in-UCI-Template": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ParseJson"
+                  }
+                },
+                "foreach": "@body('Get_Sites_from_UCI-Template')?['value']",
+                "runAfter": {
+                  "Get_Sites_from_UCI-Template": [
+                    "Succeeded"
+                  ]
+                },
+                "type": "Foreach"
+              },
+              "Get_Epics_from_UCI-Template": {
+                "inputs": {
+                  "host": {
+                    "connection": {
+                      "referenceName": "visualstudioteamservices"
+                    }
+                  },
+                  "method": "get",
+                  "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_UCI-Template')?['System.Id'])}/children",
+                  "queries": {
+                    "account": "@parameters('Organization_Name')",
+                    "project": "@parameters('Master_Project_Name')",
+                    "workItemType": "Epic"
+                  }
+                },
+                "runAfter": {},
+                "type": "ApiConnection"
+              },
+              "Get_Sites_from_UCI-Template": {
+                "inputs": {
+                  "host": {
+                    "connection": {
+                      "referenceName": "visualstudioteamservices"
+                    }
+                  },
+                  "method": "get",
+                  "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_UCI-Template')?['System.Id'])}/children",
+                  "queries": {
+                    "account": "@parameters('Organization_Name')",
+                    "project": "@parameters('Master_Project_Name')",
+                    "workItemType": "Site"
+                  }
+                },
+                "runAfter": {
+                  "For_each_Epic_in_UCI-Template": [
+                    "Succeeded"
+                  ]
+                },
+                "type": "ApiConnection"
+              }
+            },
+            "foreach": "@body('Get_UCI-Template')?['value']",
+            "runAfter": {
+              "Get_UCI-Template": [
+                "Succeeded"
+              ]
+            },
+            "type": "Foreach"
+          },
+          "For_each_UC_Innovation": {
+            "actions": {
+              "For_each_Epic": {
+                "actions": {
+                  "Compose_HTTP_request_for_Epic": {
+                    "inputs": {
+                      "AreaPath": "@variables('Innovation_Area_Path')",
+                      "CopyItemType": "Epic",
+                      "Description": "@items('For_each_Epic')?['System.Description']",
+                      "ID": "@items('For_each_Epic')?['System.Id']",
+                      "IterationPath": "@body('Create_a_UC_Innovation')?['fields']?['System_IterationPath']",
+                      "StackRank": "@items('For_each_Epic')?['Microsoft.VSTS.Common.StackRank']",
+                      "Title": "@items('For_each_Epic')?['System.Title']",
+                      "URL": "@body('Create_a_UC_Innovation')?['url']",
+                      "ValueArea": "@items('For_each_Epic')?['Microsoft.VSTS.Common.ValueArea']"
+                    },
+                    "runAfter": {},
+                    "type": "Compose"
+                  },
+                  "For_each_Feature_in_Epic": {
+                    "actions": {
+                      "Compose_HTTP_Feature_in_Epic": {
+                        "inputs": {
+                          "AreaPath": "@variables('Innovation_Area_Path')",
+                          "CopyItemType": "Feature",
+                          "Description": "@items('For_each_Feature_in_Epic')?['System.Description']",
+                          "ID": "@items('For_each_Feature_in_Epic')?['System.Id']",
+                          "IterationPath": "@body('Create_a_UC_Innovation')?['fields']?['System_IterationPath']",
+                          "StackRank": "@items('For_each_Feature_in_Epic')?['Microsoft.VSTS.Common.StackRank']",
+                          "Title": "@items('For_each_Feature_in_Epic')?['System.Title']",
+                          "URL": "@body('Parse_JSON_Epic_creation_response')?['URL']",
+                          "ValueArea": "@items('For_each_Feature_in_Epic')?['Microsoft.VSTS.Common.ValueArea']"
+                        },
+                        "runAfter": {},
+                        "type": "Compose"
+                      },
+                      "For_each_User_Story_in_Feature_in__UCI": {
+                        "actions": {
+                          "Compose_US_for_Feature_in_UCI": {
+                            "inputs": {
+                              "AreaPath": "@variables('Innovation_Area_Path')",
+                              "CopyItemType": "User Story",
+                              "Description": "@items('For_each_User_Story_in_Feature_in__UCI')?['System.Description']",
+                              "ID": "@items('For_each_User_Story_in_Feature_in__UCI')?['System.Id']",
+                              "IterationPath": "@body('Create_a_UC_Innovation')?['fields']?['System_IterationPath']",
+                              "StackRank": "@items('For_each_User_Story_in_Feature_in__UCI')?['Microsoft.VSTS.Common.StackRank']",
+                              "Title": "@items('For_each_User_Story_in_Feature_in__UCI')?['System.Title']",
+                              "URL": "@body('Parse_JSON_Feature_in_Epic_in_UCI')?['URL']",
+                              "ValueArea": "@items('For_each_User_Story_in_Feature_in__UCI')?['Microsoft.VSTS.Common.ValueArea']"
+                            },
+                            "runAfter": {},
+                            "type": "Compose"
+                          },
+                          "For_each_Task_in_user_story_in_UCI": {
+                            "actions": {
+                              "Compose_Task_in_user_story_in_UCI": {
+                                "inputs": {
+                                  "AreaPath": "@variables('Innovation_Area_Path')",
+                                  "CopyItemType": "Task",
+                                  "Description": "@items('For_each_Task_in_user_story_in_UCI')?['System.Description']",
+                                  "ID": "@items('For_each_Task_in_user_story_in_UCI')?['System.Id']",
+                                  "IterationPath": "@body('Create_a_UC_Innovation')?['fields']?['System_IterationPath']",
+                                  "StackRank": "@items('For_each_Task_in_user_story_in_UCI')?['Microsoft.VSTS.Common.StackRank']",
+                                  "Title": "@items('For_each_Task_in_user_story_in_UCI')?['System.Title']",
+                                  "URL": "@body('Parse_JSON_US_for_Feature_in_UCI')?['URL']",
+                                  "ValueArea": "@items('For_each_User_Story_in_Feature_in__UCI')?['Microsoft.VSTS.Common.ValueArea']"
+                                },
+                                "runAfter": {},
+                                "type": "Compose"
+                              },
+                              "HTTP-Copy-Children-Create-Task_in_user_story_in_UCI": {
+                                "inputs": {
+                                  "body": "@outputs('Compose_Task_in_user_story_in_UCI')",
+                                  "host": {
+                                    "workflow": {
+                                      "id": "http-copy-children-create-wi"
+                                    }
+                                  }
+                                },
+                                "runAfter": {
+                                  "Compose_Task_in_user_story_in_UCI": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "type": "Workflow"
+                              },
+                              "Parse_JSON_Task_in_User_Story_in_UCI": {
+                                "inputs": {
+                                  "content": "@body('HTTP-Copy-Children-Create-Task_in_user_story_in_UCI')",
+                                  "schema": {
+                                    "properties": {
+                                      "Result": {
+                                        "type": "string"
+                                      },
+                                      "URL": {
+                                        "type": "string"
+                                      },
+                                      "WorkItemType": {
+                                        "type": "string"
+                                      },
+                                      "WorkflowId": {
+                                        "type": "string"
+                                      },
+                                      "WorkflowName": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  }
+                                },
+                                "runAfter": {
+                                  "HTTP-Copy-Children-Create-Task_in_user_story_in_UCI": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "type": "ParseJson"
+                              }
+                            },
+                            "foreach": "@body('Get_Task_from_User_Story_in_UCI')?['value']",
+                            "runAfter": {
+                              "Get_Task_from_User_Story_in_UCI": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Foreach"
+                          },
+                          "Get_Task_from_User_Story_in_UCI": {
+                            "inputs": {
+                              "host": {
+                                "connection": {
+                                  "referenceName": "visualstudioteamservices"
+                                }
+                              },
+                              "method": "get",
+                              "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_User_Story_in_Feature_in__UCI')?['System.Id'])}/children",
+                              "queries": {
+                                "account": "@parameters('Organization_Name')",
+                                "project": "@parameters('Master_Project_Name')",
+                                "workItemType": "Task"
+                              }
+                            },
+                            "runAfter": {
+                              "Parse_JSON_US_for_Feature_in_UCI": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ApiConnection"
+                          },
+                          "HTTP-Copy-Children-Create-US-for-Feature-In-UCI": {
+                            "inputs": {
+                              "body": "@outputs('Compose_US_for_Feature_in_UCI')",
+                              "host": {
+                                "workflow": {
+                                  "id": "http-copy-children-create-wi"
+                                }
+                              }
+                            },
+                            "runAfter": {
+                              "Compose_US_for_Feature_in_UCI": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Workflow"
+                          },
+                          "Parse_JSON_US_for_Feature_in_UCI": {
+                            "inputs": {
+                              "content": "@body('HTTP-Copy-Children-Create-US-for-Feature-In-UCI')",
+                              "schema": {
+                                "properties": {
+                                  "Result": {
+                                    "type": "string"
+                                  },
+                                  "URL": {
+                                    "type": "string"
+                                  },
+                                  "WorkItemType": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowId": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowName": {
+                                    "type": "string"
+                                  }
+                                },
+                                "type": "object"
+                              }
+                            },
+                            "runAfter": {
+                              "HTTP-Copy-Children-Create-US-for-Feature-In-UCI": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ParseJson"
+                          }
+                        },
+                        "foreach": "@body('Get_User_Story_from_feature_in_UCI')?['value']",
+                        "runAfter": {
+                          "Get_User_Story_from_feature_in_UCI": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Foreach"
+                      },
+                      "Get_User_Story_from_feature_in_UCI": {
+                        "inputs": {
+                          "host": {
+                            "connection": {
+                              "referenceName": "visualstudioteamservices"
+                            }
+                          },
+                          "method": "get",
+                          "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Feature_in_Epic')?['System.Id'])}/children",
+                          "queries": {
+                            "account": "@parameters('Organization_Name')",
+                            "project": "@parameters('Master_Project_Name')",
+                            "workItemType": "User Story"
+                          }
+                        },
+                        "runAfter": {
+                          "Parse_JSON_Feature_in_Epic_in_UCI": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ApiConnection"
+                      },
+                      "HTTP-Copy-Children-Create-Feature-in-epic": {
+                        "inputs": {
+                          "body": "@outputs('Compose_HTTP_Feature_in_Epic')",
+                          "host": {
+                            "workflow": {
+                              "id": "http-copy-children-create-wi"
+                            }
+                          }
+                        },
+                        "runAfter": {
+                          "Compose_HTTP_Feature_in_Epic": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Workflow"
+                      },
+                      "Parse_JSON_Feature_in_Epic_in_UCI": {
+                        "inputs": {
+                          "content": "@body('HTTP-Copy-Children-Create-Feature-in-epic')",
+                          "schema": {
+                            "properties": {
+                              "Result": {
+                                "type": "string"
+                              },
+                              "URL": {
+                                "type": "string"
+                              },
+                              "WorkItemType": {
+                                "type": "string"
+                              },
+                              "WorkflowId": {
+                                "type": "string"
+                              },
+                              "WorkflowName": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "runAfter": {
+                          "HTTP-Copy-Children-Create-Feature-in-epic": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ParseJson"
+                      }
+                    },
+                    "foreach": "@body('Get_Feature_from_Epic')?['value']",
+                    "runAfter": {
+                      "Get_Feature_from_Epic": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Foreach"
+                  },
+                  "Get_Feature_from_Epic": {
+                    "inputs": {
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "get",
+                      "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Epic')?['System.Id'])}/children",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')",
+                        "project": "@parameters('Master_Project_Name')",
+                        "workItemType": "Feature"
+                      }
+                    },
+                    "runAfter": {
+                      "Parse_JSON_Epic_creation_response": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ApiConnection"
+                  },
+                  "HTTP-Copy-Children-Create-Epics": {
+                    "inputs": {
+                      "body": "@outputs('Compose_HTTP_request_for_Epic')",
+                      "host": {
+                        "workflow": {
+                          "id": "http-copy-children-create-wi"
+                        }
+                      }
+                    },
+                    "runAfter": {
+                      "Compose_HTTP_request_for_Epic": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Workflow"
+                  },
+                  "Parse_JSON_Epic_creation_response": {
+                    "inputs": {
+                      "content": "@body('HTTP-Copy-Children-Create-Epics')",
+                      "schema": {
+                        "properties": {
+                          "Result": {
+                            "type": "string"
+                          },
+                          "URL": {
+                            "type": "string"
+                          },
+                          "WorkItemType": {
+                            "type": "string"
+                          },
+                          "WorkflowId": {
+                            "type": "string"
+                          },
+                          "WorkflowName": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "runAfter": {
+                      "HTTP-Copy-Children-Create-Epics": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ParseJson"
+                  }
+                },
+                "foreach": "@body('Get_Epics_from_UCI')?['value']",
+                "runAfter": {
+                  "Get_Epics_from_UCI": [
+                    "Succeeded"
+                  ]
+                },
+                "type": "Foreach"
+              },
+              "For_each_Site_in_UCI": {
+                "actions": {
+                  "Compose_Site_in_UCI": {
+                    "inputs": {
+                      "AreaPath": "@variables('Innovation_Area_Path')",
+                      "CopyItemType": "Site",
+                      "Description": "@items('For_each_Site_in_UCI')?['System.Description']",
+                      "ID": "@items('For_each_Site_in_UCI')?['System.Id']",
+                      "IterationPath": "@body('Create_a_UC_Innovation')?['fields']?['System_IterationPath']",
+                      "StackRank": "@items('For_each_Site_in_UCI')?['Microsoft.VSTS.Common.StackRank']",
+                      "Title": "@items('For_each_Site_in_UCI')?['System.Title']",
+                      "URL": "@body('Create_a_UC_Innovation')?['url']"
+                    },
+                    "runAfter": {},
+                    "type": "Compose"
+                  },
+                  "For_each_Feature_from_Site": {
+                    "actions": {
+                      "Compose_Feature_from_Site": {
+                        "inputs": {
+                          "AreaPath": "@variables('Innovation_Area_Path')",
+                          "CopyItemType": "Feature",
+                          "Description": "@items('For_each_Feature_from_Site')?['System.Description']",
+                          "ID": "@items('For_each_Feature_from_Site')?['System.Id']",
+                          "IterationPath": "@body('Create_a_UC_Innovation')?['fields']?['System_IterationPath']",
+                          "StackRank": "@items('For_each_Feature_from_Site')?['Microsoft.VSTS.Common.StackRank']",
+                          "Title": "@items('For_each_Feature_from_Site')?['System.Title']",
+                          "URL": "@body('Parse_JSON_Site_in_UCI')?['URL']",
+                          "ValueArea": "@items('For_each_Feature_from_Site')?['Microsoft.VSTS.Common.ValueArea']"
+                        },
+                        "runAfter": {},
+                        "type": "Compose"
+                      },
+                      "For_each_user_story_from_feature_in_UCI_Site": {
+                        "actions": {
+                          "Compose_HTTP_user_story_for_feature_in_UCI": {
+                            "inputs": {
+                              "AreaPath": "@variables('Innovation_Area_Path')",
+                              "CopyItemType": "User Story",
+                              "Description": "@items('For_each_user_story_from_feature_in_UCI_Site')?['System.Description']",
+                              "ID": "@items('For_each_user_story_from_feature_in_UCI_Site')?['System.Id']",
+                              "IterationPath": "@body('Create_a_UC_Innovation')?['fields']?['System_IterationPath']",
+                              "StackRank": "@items('For_each_user_story_from_feature_in_UCI_Site')?['Microsoft.VSTS.Common.StackRank']",
+                              "Title": "@items('For_each_user_story_from_feature_in_UCI_Site')?['System.Title']",
+                              "URL": "@body('Parse_JSON_Feature_from_Site')?['URL']",
+                              "ValueArea": "@items('For_each_user_story_from_feature_in_UCI_Site')?['Microsoft.VSTS.Common.ValueArea']"
+                            },
+                            "runAfter": {},
+                            "type": "Compose"
+                          },
+                          "For_each_Task_in_User_Story": {
+                            "actions": {
+                              "Compose_Task_in_User_Story_in_Feature_in_UCI": {
+                                "inputs": {
+                                  "AreaPath": "@variables('Innovation_Area_Path')",
+                                  "CopyItemType": "Task",
+                                  "Description": "@items('For_each_Task_in_User_Story')?['System.Description']",
+                                  "ID": "@items('For_each_Task_in_User_Story')?['System.Id']",
+                                  "IterationPath": "@body('Create_a_UC_Innovation')?['fields']?['System_IterationPath']",
+                                  "StackRank": "@items('For_each_Task_in_User_Story')?['Microsoft.VSTS.Common.StackRank']",
+                                  "Title": "@items('For_each_Task_in_User_Story')?['System.Title']",
+                                  "URL": "@body('Parse_JSON_User_Story_response_for_UCI')?['URL']",
+                                  "ValueArea": "@items('For_each_user_story_from_feature_in_UCI_Site')?['Microsoft.VSTS.Common.ValueArea']"
+                                },
+                                "runAfter": {},
+                                "type": "Compose"
+                              },
+                              "HTTP-Copy-Children-Create-Task_in_User_Story_in_Feature_in_UCI": {
+                                "inputs": {
+                                  "body": "@outputs('Compose_Task_in_User_Story_in_Feature_in_UCI')",
+                                  "host": {
+                                    "workflow": {
+                                      "id": "http-copy-children-create-wi"
+                                    }
+                                  }
+                                },
+                                "runAfter": {
+                                  "Compose_Task_in_User_Story_in_Feature_in_UCI": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "type": "Workflow"
+                              },
+                              "Parse_JSON_Task_in_User_Story_in_Feature_in_UCI": {
+                                "inputs": {
+                                  "content": "@body('HTTP-Copy-Children-Create-Task_in_User_Story_in_Feature_in_UCI')",
+                                  "schema": {
+                                    "properties": {
+                                      "Result": {
+                                        "type": "string"
+                                      },
+                                      "URL": {
+                                        "type": "string"
+                                      },
+                                      "WorkItemType": {
+                                        "type": "string"
+                                      },
+                                      "WorkflowId": {
+                                        "type": "string"
+                                      },
+                                      "WorkflowName": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  }
+                                },
+                                "runAfter": {
+                                  "HTTP-Copy-Children-Create-Task_in_User_Story_in_Feature_in_UCI": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "type": "ParseJson"
+                              }
+                            },
+                            "foreach": "@body('Get_Task_from_User_Story')?['value']",
+                            "runAfter": {
+                              "Get_Task_from_User_Story": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Foreach"
+                          },
+                          "Get_Task_from_User_Story": {
+                            "inputs": {
+                              "host": {
+                                "connection": {
+                                  "referenceName": "visualstudioteamservices"
+                                }
+                              },
+                              "method": "get",
+                              "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_user_story_from_feature_in_UCI_Site')?['System.Id'])}/children",
+                              "queries": {
+                                "account": "@parameters('Organization_Name')",
+                                "project": "@parameters('Master_Project_Name')",
+                                "workItemType": "Task"
+                              }
+                            },
+                            "runAfter": {
+                              "Parse_JSON_User_Story_response_for_UCI": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ApiConnection"
+                          },
+                          "HTTP-Copy-Children-Create-User_Story_for_Feature_in_UCI": {
+                            "inputs": {
+                              "body": "@outputs('Compose_HTTP_user_story_for_feature_in_UCI')",
+                              "host": {
+                                "workflow": {
+                                  "id": "http-copy-children-create-wi"
+                                }
+                              }
+                            },
+                            "runAfter": {
+                              "Compose_HTTP_user_story_for_feature_in_UCI": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Workflow"
+                          },
+                          "Parse_JSON_User_Story_response_for_UCI": {
+                            "inputs": {
+                              "content": "@body('HTTP-Copy-Children-Create-User_Story_for_Feature_in_UCI')",
+                              "schema": {
+                                "properties": {
+                                  "Result": {
+                                    "type": "string"
+                                  },
+                                  "URL": {
+                                    "type": "string"
+                                  },
+                                  "WorkItemType": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowId": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowName": {
+                                    "type": "string"
+                                  }
+                                },
+                                "type": "object"
+                              }
+                            },
+                            "runAfter": {
+                              "HTTP-Copy-Children-Create-User_Story_for_Feature_in_UCI": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ParseJson"
+                          }
+                        },
+                        "foreach": "@body('Get_user_story_from_Feature_in_UCI_Site')?['value']",
+                        "runAfter": {
+                          "Get_user_story_from_Feature_in_UCI_Site": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Foreach"
+                      },
+                      "Get_user_story_from_Feature_in_UCI_Site": {
+                        "inputs": {
+                          "host": {
+                            "connection": {
+                              "referenceName": "visualstudioteamservices"
+                            }
+                          },
+                          "method": "get",
+                          "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Feature_from_Site')?['System.Id'])}/children",
+                          "queries": {
+                            "account": "@parameters('Organization_Name')",
+                            "project": "@parameters('Master_Project_Name')",
+                            "workItemType": "User Story"
+                          }
+                        },
+                        "runAfter": {
+                          "Parse_JSON_Feature_from_Site": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ApiConnection"
+                      },
+                      "HTTP-Copy-Children-Create-Feature_from_Site": {
+                        "inputs": {
+                          "body": "@outputs('Compose_Feature_from_Site')",
+                          "host": {
+                            "workflow": {
+                              "id": "http-copy-children-create-wi"
+                            }
+                          }
+                        },
+                        "runAfter": {
+                          "Compose_Feature_from_Site": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Workflow"
+                      },
+                      "Parse_JSON_Feature_from_Site": {
+                        "inputs": {
+                          "content": "@body('HTTP-Copy-Children-Create-Feature_from_Site')",
+                          "schema": {
+                            "properties": {
+                              "Result": {
+                                "type": "string"
+                              },
+                              "URL": {
+                                "type": "string"
+                              },
+                              "WorkItemType": {
+                                "type": "string"
+                              },
+                              "WorkflowId": {
+                                "type": "string"
+                              },
+                              "WorkflowName": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "runAfter": {
+                          "HTTP-Copy-Children-Create-Feature_from_Site": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ParseJson"
+                      }
+                    },
+                    "foreach": "@body('Get_Feature_from_Site')?['value']",
+                    "runAfter": {
+                      "Get_Feature_from_Site": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Foreach"
+                  },
+                  "For_each_Line_in_Site_in_UCI": {
+                    "actions": {
+                      "Compose_HTTP_request_for_Line": {
+                        "inputs": {
+                          "AreaPath": "@variables('Innovation_Area_Path')",
+                          "CopyItemType": "Line",
+                          "Description": "@items('For_each_Line_in_Site_in_UCI')?['System.Description']",
+                          "ID": "@items('For_each_Line_in_Site_in_UCI')?['System.Id']",
+                          "IterationPath": "@body('Create_a_UC_Innovation')?['fields']?['System_IterationPath']",
+                          "StackRank": "@items('For_each_Line_in_Site_in_UCI')?['Microsoft.VSTS.Common.StackRank']",
+                          "Title": "@items('For_each_Line_in_Site_in_UCI')?['System.Title']",
+                          "URL": "@body('Parse_JSON_Site_in_UCI')?['URL']"
+                        },
+                        "runAfter": {},
+                        "type": "Compose"
+                      },
+                      "For_each_User_Story_from_Line_in_Site_in_UCI": {
+                        "actions": {
+                          "Compose_User_Story_from_Line_in_Site_in_UCI": {
+                            "inputs": {
+                              "AreaPath": "@variables('Innovation_Area_Path')",
+                              "CopyItemType": "User Story",
+                              "Description": "@items('For_each_User_Story_from_Line_in_Site_in_UCI')?['System.Description']",
+                              "ID": "@items('For_each_User_Story_from_Line_in_Site_in_UCI')?['System.Id']",
+                              "IterationPath": "@body('Create_a_UC_Innovation')?['fields']?['System_IterationPath']",
+                              "StackRank": "@items('For_each_User_Story_from_Line_in_Site_in_UCI')?['Microsoft.VSTS.Common.StackRank']",
+                              "Title": "@items('For_each_User_Story_from_Line_in_Site_in_UCI')?['System.Title']",
+                              "URL": "@body('Parse_JSON_Line_in_Site-UCI')?['URL']",
+                              "ValueArea": "@items('For_each_User_Story_from_Line_in_Site_in_UCI')?['Microsoft.VSTS.Common.ValueArea']"
+                            },
+                            "runAfter": {},
+                            "type": "Compose"
+                          },
+                          "HTTP-Copy-Children-Create-User_Story_for_Line_in_Site_in_UCI": {
+                            "inputs": {
+                              "body": "@outputs('Compose_User_Story_from_Line_in_Site_in_UCI')",
+                              "host": {
+                                "workflow": {
+                                  "id": "http-copy-children-create-wi"
+                                }
+                              }
+                            },
+                            "runAfter": {
+                              "Compose_User_Story_from_Line_in_Site_in_UCI": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Workflow"
+                          },
+                          "Parse_JSON_User_Story_response_for_Line_in_Site_in_UCI": {
+                            "inputs": {
+                              "content": "@body('HTTP-Copy-Children-Create-User_Story_for_Line_in_Site_in_UCI')",
+                              "schema": {
+                                "properties": {
+                                  "Result": {
+                                    "type": "string"
+                                  },
+                                  "URL": {
+                                    "type": "string"
+                                  },
+                                  "WorkItemType": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowId": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowName": {
+                                    "type": "string"
+                                  }
+                                },
+                                "type": "object"
+                              }
+                            },
+                            "runAfter": {
+                              "HTTP-Copy-Children-Create-User_Story_for_Line_in_Site_in_UCI": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ParseJson"
+                          }
+                        },
+                        "foreach": "@body('Get_User_Story_from_Line_in_Site_in_UCI')?['value']",
+                        "runAfter": {
+                          "Get_User_Story_from_Line_in_Site_in_UCI": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Foreach"
+                      },
+                      "Get_User_Story_from_Line_in_Site_in_UCI": {
+                        "inputs": {
+                          "host": {
+                            "connection": {
+                              "referenceName": "visualstudioteamservices"
+                            }
+                          },
+                          "method": "get",
+                          "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Line_in_Site_in_UCI')?['System.Id'])}/children",
+                          "queries": {
+                            "account": "@parameters('Organization_Name')",
+                            "project": "@parameters('Master_Project_Name')",
+                            "workItemType": "User Story"
+                          }
+                        },
+                        "runAfter": {
+                          "Parse_JSON_Line_in_Site-UCI": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ApiConnection"
+                      },
+                      "HTTP-Copy-Children-Create-Line_in_Site_-UCI": {
+                        "inputs": {
+                          "body": "@outputs('Compose_HTTP_request_for_Line')",
+                          "host": {
+                            "workflow": {
+                              "id": "http-copy-children-create-wi"
+                            }
+                          }
+                        },
+                        "runAfter": {
+                          "Compose_HTTP_request_for_Line": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Workflow"
+                      },
+                      "Parse_JSON_Line_in_Site-UCI": {
+                        "inputs": {
+                          "content": "@body('HTTP-Copy-Children-Create-Line_in_Site_-UCI')",
+                          "schema": {
+                            "properties": {
+                              "Result": {
+                                "type": "string"
+                              },
+                              "URL": {
+                                "type": "string"
+                              },
+                              "WorkItemType": {
+                                "type": "string"
+                              },
+                              "WorkflowId": {
+                                "type": "string"
+                              },
+                              "WorkflowName": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "runAfter": {
+                          "HTTP-Copy-Children-Create-Line_in_Site_-UCI": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ParseJson"
+                      }
+                    },
+                    "foreach": "@body('Get_Lines_from_Site_for_UCI')?['value']",
+                    "runAfter": {
+                      "Get_Lines_from_Site_for_UCI": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Foreach"
+                  },
+                  "Get_Feature_from_Site": {
+                    "inputs": {
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "get",
+                      "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Site_in_UCI')?['System.Id'])}/children",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')",
+                        "project": "@parameters('Master_Project_Name')",
+                        "workItemType": "Feature"
+                      }
+                    },
+                    "runAfter": {
+                      "Parse_JSON_Site_in_UCI": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ApiConnection"
+                  },
+                  "Get_Lines_from_Site_for_UCI": {
+                    "inputs": {
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "get",
+                      "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Site_in_UCI')?['System.Id'])}/children",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')",
+                        "project": "@parameters('Master_Project_Name')",
+                        "workItemType": "Line"
+                      }
+                    },
+                    "runAfter": {
+                      "For_each_Feature_from_Site": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ApiConnection"
+                  },
+                  "HTTP-Copy-Children-Create-Site_in_UCI": {
+                    "inputs": {
+                      "body": "@outputs('Compose_Site_in_UCI')",
+                      "host": {
+                        "workflow": {
+                          "id": "http-copy-children-create-wi"
+                        }
+                      }
+                    },
+                    "runAfter": {
+                      "Compose_Site_in_UCI": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Workflow"
+                  },
+                  "Parse_JSON_Site_in_UCI": {
+                    "inputs": {
+                      "content": "@body('HTTP-Copy-Children-Create-Site_in_UCI')",
+                      "schema": {
+                        "properties": {
+                          "Result": {
+                            "type": "string"
+                          },
+                          "URL": {
+                            "type": "string"
+                          },
+                          "WorkItemType": {
+                            "type": "string"
+                          },
+                          "WorkflowId": {
+                            "type": "string"
+                          },
+                          "WorkflowName": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "runAfter": {
+                      "HTTP-Copy-Children-Create-Site_in_UCI": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ParseJson"
+                  }
+                },
+                "foreach": "@body('Get_Sites_from_UCI')?['value']",
+                "runAfter": {
+                  "Get_Sites_from_UCI": [
+                    "Succeeded"
+                  ]
+                },
+                "type": "Foreach"
+              },
+              "Get_Epics_from_UCI": {
+                "inputs": {
+                  "host": {
+                    "connection": {
+                      "referenceName": "visualstudioteamservices"
+                    }
+                  },
+                  "method": "get",
+                  "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_UC_Innovation')?['System.Id'])}/children",
+                  "queries": {
+                    "account": "@parameters('Organization_Name')",
+                    "project": "@parameters('Master_Project_Name')",
+                    "workItemType": "Epic"
+                  }
+                },
+                "runAfter": {},
+                "type": "ApiConnection"
+              },
+              "Get_Sites_from_UCI": {
+                "inputs": {
+                  "host": {
+                    "connection": {
+                      "referenceName": "visualstudioteamservices"
+                    }
+                  },
+                  "method": "get",
+                  "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_UC_Innovation')?['System.Id'])}/children",
+                  "queries": {
+                    "account": "@parameters('Organization_Name')",
+                    "project": "@parameters('Master_Project_Name')",
+                    "workItemType": "Site"
+                  }
+                },
+                "runAfter": {
+                  "For_each_Epic": [
+                    "Succeeded"
+                  ]
+                },
+                "type": "ApiConnection"
+              }
+            },
+            "foreach": "@body('Get_UC_Innovation_Template')?['value']",
+            "runAfter": {
+              "Get_UC_Innovation_Template": [
+                "Succeeded"
+              ]
+            },
+            "type": "Foreach"
+          },
+          "For_each_UC_Scale": {
+            "actions": {
+              "For_each_Epic_in_UCS": {
+                "actions": {
+                  "Compose_Epic_for_UCS": {
+                    "inputs": {
+                      "AreaPath": "@variables('Scale_Area_Path')",
+                      "CopyItemType": "Epic",
+                      "Description": "@items('For_each_Epic_in_UCS')?['System.Description']",
+                      "ID": "@items('For_each_Epic_in_UCS')?['System.Id']",
+                      "IterationPath": "@body('Create_a_UC_Scale')?['fields']?['System_IterationPath']",
+                      "StackRank": "@items('For_each_Epic_in_UCS')?['Microsoft.VSTS.Common.StackRank']",
+                      "Title": "@items('For_each_Epic_in_UCS')?['System.Title']",
+                      "URL": "@body('Create_a_UC_Scale')?['url']",
+                      "ValueArea": "@items('For_each_Epic_in_UCS')?['Microsoft.VSTS.Common.ValueArea']"
+                    },
+                    "runAfter": {},
+                    "type": "Compose"
+                  },
+                  "For_each_Feature_in_UCS": {
+                    "actions": {
+                      "Compose_HTTP_Feature_in_UCS": {
+                        "inputs": {
+                          "AreaPath": "@variables('Scale_Area_Path')",
+                          "CopyItemType": "Feature",
+                          "Description": "@items('For_each_Feature_in_UCS')?['System.Description']",
+                          "ID": "@items('For_each_Feature_in_UCS')?['System.Id']",
+                          "IterationPath": "@body('Create_a_UC_Scale')?['fields']?['System_IterationPath']",
+                          "StackRank": "@items('For_each_Feature_in_UCS')?['Microsoft.VSTS.Common.StackRank']",
+                          "Title": "@items('For_each_Feature_in_UCS')?['System.Title']",
+                          "URL": "@body('Parse_JSON_Epic_for_UCS')?['URL']",
+                          "ValueArea": "@items('For_each_Feature_in_UCS')?['Microsoft.VSTS.Common.ValueArea']"
+                        },
+                        "runAfter": {},
+                        "type": "Compose"
+                      },
+                      "For_each_User_Story_in_UCS": {
+                        "actions": {
+                          "Compose_HTTP_request_for_User_Story_in_UCS": {
+                            "inputs": {
+                              "AreaPath": "@variables('Scale_Area_Path')",
+                              "CopyItemType": "User Story",
+                              "Description": "@items('For_each_User_Story_in_UCS')?['System.Description']",
+                              "ID": "@items('For_each_User_Story_in_UCS')?['System.Id']",
+                              "IterationPath": "@body('Create_a_UC_Scale')?['fields']?['System_IterationPath']",
+                              "StackRank": "@items('For_each_User_Story_in_UCS')?['Microsoft.VSTS.Common.StackRank']",
+                              "Title": "@items('For_each_User_Story_in_UCS')?['System.Title']",
+                              "URL": "@body('Parse_JSON_Feature_in_UCS')?['URL']",
+                              "ValueArea": "@items('For_each_User_Story_in_UCS')?['Microsoft.VSTS.Common.ValueArea']"
+                            },
+                            "runAfter": {},
+                            "type": "Compose"
+                          },
+                          "For_each_Task_in_User_Story_in_UCS": {
+                            "actions": {
+                              "Compose_Task_in_UCS": {
+                                "inputs": {
+                                  "AreaPath": "@variables('Scale_Area_Path')",
+                                  "CopyItemType": "Task",
+                                  "Description": "@items('For_each_Task_in_User_Story_in_UCS')?['System.Description']",
+                                  "ID": "@items('For_each_Task_in_User_Story_in_UCS')?['System.Id']",
+                                  "IterationPath": "@body('Create_a_UC_Scale')?['fields']?['System_IterationPath']",
+                                  "StackRank": "@items('For_each_Task_in_User_Story_in_UCS')?['Microsoft.VSTS.Common.StackRank']",
+                                  "Title": "@items('For_each_Task_in_User_Story_in_UCS')?['System.Title']",
+                                  "URL": "@body('Parse_JSON_user_story_in_UCS_response')?['URL']",
+                                  "ValueArea": "@items('For_each_User_Story_in_UCS')?['Microsoft.VSTS.Common.ValueArea']"
+                                },
+                                "runAfter": {},
+                                "type": "Compose"
+                              },
+                              "HTTP-Copy-Children-Create-Task_in_UCS": {
+                                "inputs": {
+                                  "body": "@outputs('Compose_Task_in_UCS')",
+                                  "host": {
+                                    "workflow": {
+                                      "id": "http-copy-children-create-wi"
+                                    }
+                                  }
+                                },
+                                "runAfter": {
+                                  "Compose_Task_in_UCS": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "type": "Workflow"
+                              },
+                              "Parse_JSON_Task_in_UCS": {
+                                "inputs": {
+                                  "content": "@body('HTTP-Copy-Children-Create-Task_in_UCS')",
+                                  "schema": {
+                                    "properties": {
+                                      "Result": {
+                                        "type": "string"
+                                      },
+                                      "URL": {
+                                        "type": "string"
+                                      },
+                                      "WorkItemType": {
+                                        "type": "string"
+                                      },
+                                      "WorkflowId": {
+                                        "type": "string"
+                                      },
+                                      "WorkflowName": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  }
+                                },
+                                "runAfter": {
+                                  "HTTP-Copy-Children-Create-Task_in_UCS": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "type": "ParseJson"
+                              }
+                            },
+                            "foreach": "@body('Get_Task_from_User_Story_in_UCS')?['value']",
+                            "runAfter": {
+                              "Get_Task_from_User_Story_in_UCS": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Foreach"
+                          },
+                          "Get_Task_from_User_Story_in_UCS": {
+                            "inputs": {
+                              "host": {
+                                "connection": {
+                                  "referenceName": "visualstudioteamservices"
+                                }
+                              },
+                              "method": "get",
+                              "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_User_Story_in_UCS')?['System.Id'])}/children",
+                              "queries": {
+                                "account": "@parameters('Organization_Name')",
+                                "project": "@parameters('Master_Project_Name')",
+                                "workItemType": "Task"
+                              }
+                            },
+                            "runAfter": {
+                              "Parse_JSON_user_story_in_UCS_response": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ApiConnection"
+                          },
+                          "HTTP-Copy-Children-Create-User_Story_in_UCS": {
+                            "inputs": {
+                              "body": "@outputs('Compose_HTTP_request_for_User_Story_in_UCS')",
+                              "host": {
+                                "workflow": {
+                                  "id": "http-copy-children-create-wi"
+                                }
+                              }
+                            },
+                            "runAfter": {
+                              "Compose_HTTP_request_for_User_Story_in_UCS": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Workflow"
+                          },
+                          "Parse_JSON_user_story_in_UCS_response": {
+                            "inputs": {
+                              "content": "@body('HTTP-Copy-Children-Create-User_Story_in_UCS')",
+                              "schema": {
+                                "properties": {
+                                  "Result": {
+                                    "type": "string"
+                                  },
+                                  "URL": {
+                                    "type": "string"
+                                  },
+                                  "WorkItemType": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowId": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowName": {
+                                    "type": "string"
+                                  }
+                                },
+                                "type": "object"
+                              }
+                            },
+                            "runAfter": {
+                              "HTTP-Copy-Children-Create-User_Story_in_UCS": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ParseJson"
+                          }
+                        },
+                        "foreach": "@body('Get_User_Story_from_Feature_in_UCS')?['value']",
+                        "runAfter": {
+                          "Get_User_Story_from_Feature_in_UCS": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Foreach"
+                      },
+                      "Get_User_Story_from_Feature_in_UCS": {
+                        "inputs": {
+                          "host": {
+                            "connection": {
+                              "referenceName": "visualstudioteamservices"
+                            }
+                          },
+                          "method": "get",
+                          "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Feature_in_UCS')?['System.Id'])}/children",
+                          "queries": {
+                            "account": "@parameters('Organization_Name')",
+                            "project": "@parameters('Master_Project_Name')",
+                            "workItemType": "User Story"
+                          }
+                        },
+                        "runAfter": {
+                          "Parse_JSON_Feature_in_UCS": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ApiConnection"
+                      },
+                      "HTTP-Copy-Children-Create-Feature-in-UCS": {
+                        "inputs": {
+                          "body": "@outputs('Compose_HTTP_Feature_in_UCS')",
+                          "host": {
+                            "workflow": {
+                              "id": "http-copy-children-create-wi"
+                            }
+                          }
+                        },
+                        "runAfter": {
+                          "Compose_HTTP_Feature_in_UCS": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Workflow"
+                      },
+                      "Parse_JSON_Feature_in_UCS": {
+                        "inputs": {
+                          "content": "@body('HTTP-Copy-Children-Create-Feature-in-UCS')",
+                          "schema": {
+                            "properties": {
+                              "Result": {
+                                "type": "string"
+                              },
+                              "URL": {
+                                "type": "string"
+                              },
+                              "WorkItemType": {
+                                "type": "string"
+                              },
+                              "WorkflowId": {
+                                "type": "string"
+                              },
+                              "WorkflowName": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "runAfter": {
+                          "HTTP-Copy-Children-Create-Feature-in-UCS": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ParseJson"
+                      }
+                    },
+                    "foreach": "@body('Get_Features_from_Epic')?['value']",
+                    "runAfter": {
+                      "Get_Features_from_Epic": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Foreach"
+                  },
+                  "Get_Features_from_Epic": {
+                    "inputs": {
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "get",
+                      "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Epic_in_UCS')?['System.Id'])}/children",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')",
+                        "project": "@parameters('Master_Project_Name')",
+                        "workItemType": "Feature"
+                      }
+                    },
+                    "runAfter": {
+                      "Parse_JSON_Epic_for_UCS": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ApiConnection"
+                  },
+                  "HTTP-Copy-Children-Create-Epics-in-UCS": {
+                    "inputs": {
+                      "body": "@outputs('Compose_Epic_for_UCS')",
+                      "host": {
+                        "workflow": {
+                          "id": "http-copy-children-create-wi"
+                        }
+                      }
+                    },
+                    "runAfter": {
+                      "Compose_Epic_for_UCS": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Workflow"
+                  },
+                  "Parse_JSON_Epic_for_UCS": {
+                    "inputs": {
+                      "content": "@body('HTTP-Copy-Children-Create-Epics-in-UCS')",
+                      "schema": {
+                        "properties": {
+                          "Result": {
+                            "type": "string"
+                          },
+                          "URL": {
+                            "type": "string"
+                          },
+                          "WorkItemType": {
+                            "type": "string"
+                          },
+                          "WorkflowId": {
+                            "type": "string"
+                          },
+                          "WorkflowName": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "runAfter": {
+                      "HTTP-Copy-Children-Create-Epics-in-UCS": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ParseJson"
+                  }
+                },
+                "foreach": "@body('Get_Epic_from_UCS')?['value']",
+                "runAfter": {
+                  "Get_Epic_from_UCS": [
+                    "Succeeded"
+                  ]
+                },
+                "type": "Foreach"
+              },
+              "For_each_Site_in_UCS": {
+                "actions": {
+                  "Compose_Site_for_UCS": {
+                    "inputs": {
+                      "AreaPath": "@variables('Scale_Area_Path')",
+                      "CopyItemType": "Site",
+                      "Description": "@items('For_each_Site_in_UCS')?['System.Description']",
+                      "ID": "@items('For_each_Site_in_UCS')?['System.Id']",
+                      "IterationPath": "@body('Create_a_UC_Scale')?['fields']?['System_IterationPath']",
+                      "StackRank": "@items('For_each_Site_in_UCS')?['Microsoft.VSTS.Common.StackRank']",
+                      "Tags": "scale-site-template",
+                      "Title": "@items('For_each_Site_in_UCS')?['System.Title']",
+                      "URL": "@body('Create_a_UC_Scale')?['url']"
+                    },
+                    "runAfter": {},
+                    "type": "Compose"
+                  },
+                  "For_each_Feature_in_Site_in_UCS": {
+                    "actions": {
+                      "Compose_HTTP_request_for_Feature_in_Site_in_UCS": {
+                        "inputs": {
+                          "AreaPath": "@variables('Scale_Area_Path')",
+                          "CopyItemType": "Feature",
+                          "Description": "@items('For_each_Feature_in_Site_in_UCS')?['System.Description']",
+                          "ID": "@items('For_each_Feature_in_Site_in_UCS')?['System.Id']",
+                          "IterationPath": "@body('Create_a_UC_Scale')?['fields']?['System_IterationPath']",
+                          "StackRank": "@items('For_each_Feature_in_Site_in_UCS')?['Microsoft.VSTS.Common.StackRank']",
+                          "Title": "@items('For_each_Feature_in_Site_in_UCS')?['System.Title']",
+                          "URL": "@body('Parse_JSON_Site_creation_in_UCS_response')?['URL']",
+                          "ValueArea": "@items('For_each_Feature_in_Site_in_UCS')?['Microsoft.VSTS.Common.ValueArea']"
+                        },
+                        "runAfter": {},
+                        "type": "Compose"
+                      },
+                      "For_each_User_Story_in_Feature_in_Site_in_UCS": {
+                        "actions": {
+                          "Compose_User_story_request_for_Feature_in_Site_in_UCS": {
+                            "inputs": {
+                              "AreaPath": "@variables('Scale_Area_Path')",
+                              "CopyItemType": "User Story",
+                              "Description": "@items('For_each_User_Story_in_Feature_in_Site_in_UCS')?['System.Description']",
+                              "ID": "@items('For_each_User_Story_in_Feature_in_Site_in_UCS')?['System.Id']",
+                              "IterationPath": "@body('Create_a_UC_Scale')?['fields']?['System_IterationPath']",
+                              "StackRank": "@items('For_each_User_Story_in_Feature_in_Site_in_UCS')?['Microsoft.VSTS.Common.StackRank']",
+                              "Title": "@items('For_each_User_Story_in_Feature_in_Site_in_UCS')?['System.Title']",
+                              "URL": "@body('Parse_JSON_Feature_creation_for_Site_in_UCS')?['URL']",
+                              "ValueArea": "@items('For_each_User_Story_in_Feature_in_Site_in_UCS')?['Microsoft.VSTS.Common.ValueArea']"
+                            },
+                            "runAfter": {},
+                            "type": "Compose"
+                          },
+                          "For_each_Task_in_User_Story_in_Feature-Site-UCS": {
+                            "actions": {
+                              "Compose_Task_for_User_Story-feature-Site-UCS": {
+                                "inputs": {
+                                  "AreaPath": "@variables('Scale_Area_Path')",
+                                  "CopyItemType": "Task",
+                                  "Description": "@items('For_each_Task_in_User_Story_in_Feature-Site-UCS')?['System.Description']",
+                                  "ID": "@items('For_each_Task_in_User_Story_in_Feature-Site-UCS')?['System.Id']",
+                                  "IterationPath": "@body('Create_a_UC_Scale')?['fields']?['System_IterationPath']",
+                                  "StackRank": "@items('For_each_Task_in_User_Story_in_Feature-Site-UCS')?['Microsoft.VSTS.Common.StackRank']",
+                                  "Title": "@items('For_each_Task_in_User_Story_in_Feature-Site-UCS')?['System.Title']",
+                                  "URL": "@body('Parse_JSON_User_story_creation_for_Feature_in_Site_in_UCS')?['URL']",
+                                  "ValueArea": "@items('For_each_User_Story_in_Feature_in_Site_in_UCS')?['Microsoft.VSTS.Common.ValueArea']"
+                                },
+                                "runAfter": {},
+                                "type": "Compose"
+                              },
+                              "HTTP-Copy-Children-Create-Task_for_User_Story-feature-Site-UCS": {
+                                "inputs": {
+                                  "body": "@outputs('Compose_Task_for_User_Story-feature-Site-UCS')",
+                                  "host": {
+                                    "workflow": {
+                                      "id": "http-copy-children-create-wi"
+                                    }
+                                  }
+                                },
+                                "runAfter": {
+                                  "Compose_Task_for_User_Story-feature-Site-UCS": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "type": "Workflow"
+                              },
+                              "Parse_JSON_Task_for_User_Story-feature-Site-UCS": {
+                                "inputs": {
+                                  "content": "@body('HTTP-Copy-Children-Create-Task_for_User_Story-feature-Site-UCS')",
+                                  "schema": {
+                                    "properties": {
+                                      "Result": {
+                                        "type": "string"
+                                      },
+                                      "URL": {
+                                        "type": "string"
+                                      },
+                                      "WorkItemType": {
+                                        "type": "string"
+                                      },
+                                      "WorkflowId": {
+                                        "type": "string"
+                                      },
+                                      "WorkflowName": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  }
+                                },
+                                "runAfter": {
+                                  "HTTP-Copy-Children-Create-Task_for_User_Story-feature-Site-UCS": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "type": "ParseJson"
+                              }
+                            },
+                            "foreach": "@body('Get_Task_from_User_Story_in_Feature_in_Site_in_UCS')?['value']",
+                            "runAfter": {
+                              "Get_Task_from_User_Story_in_Feature_in_Site_in_UCS": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Foreach"
+                          },
+                          "Get_Task_from_User_Story_in_Feature_in_Site_in_UCS": {
+                            "inputs": {
+                              "host": {
+                                "connection": {
+                                  "referenceName": "visualstudioteamservices"
+                                }
+                              },
+                              "method": "get",
+                              "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_User_Story_in_Feature_in_Site_in_UCS')?['System.Id'])}/children",
+                              "queries": {
+                                "account": "@parameters('Organization_Name')",
+                                "project": "@parameters('Master_Project_Name')",
+                                "workItemType": "Task"
+                              }
+                            },
+                            "runAfter": {
+                              "Parse_JSON_User_story_creation_for_Feature_in_Site_in_UCS": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ApiConnection"
+                          },
+                          "HTTP-Copy-Children-Create-_User_story_for_Feature_in_Site_in_UCS": {
+                            "inputs": {
+                              "body": "@outputs('Compose_User_story_request_for_Feature_in_Site_in_UCS')",
+                              "host": {
+                                "workflow": {
+                                  "id": "http-copy-children-create-wi"
+                                }
+                              }
+                            },
+                            "runAfter": {
+                              "Compose_User_story_request_for_Feature_in_Site_in_UCS": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Workflow"
+                          },
+                          "Parse_JSON_User_story_creation_for_Feature_in_Site_in_UCS": {
+                            "inputs": {
+                              "content": "@body('HTTP-Copy-Children-Create-_User_story_for_Feature_in_Site_in_UCS')",
+                              "schema": {
+                                "properties": {
+                                  "Result": {
+                                    "type": "string"
+                                  },
+                                  "URL": {
+                                    "type": "string"
+                                  },
+                                  "WorkItemType": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowId": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowName": {
+                                    "type": "string"
+                                  }
+                                },
+                                "type": "object"
+                              }
+                            },
+                            "runAfter": {
+                              "HTTP-Copy-Children-Create-_User_story_for_Feature_in_Site_in_UCS": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ParseJson"
+                          }
+                        },
+                        "foreach": "@body('Get_User_Story_from_Feature_in_Site_in_UCS')?['value']",
+                        "runAfter": {
+                          "Get_User_Story_from_Feature_in_Site_in_UCS": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Foreach"
+                      },
+                      "Get_User_Story_from_Feature_in_Site_in_UCS": {
+                        "inputs": {
+                          "host": {
+                            "connection": {
+                              "referenceName": "visualstudioteamservices"
+                            }
+                          },
+                          "method": "get",
+                          "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Feature_in_Site_in_UCS')?['System.Id'])}/children",
+                          "queries": {
+                            "account": "@parameters('Organization_Name')",
+                            "project": "@parameters('Master_Project_Name')",
+                            "workItemType": "User Story"
+                          }
+                        },
+                        "runAfter": {
+                          "Parse_JSON_Feature_creation_for_Site_in_UCS": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ApiConnection"
+                      },
+                      "HTTP-Copy-Children-Create-Feature_in_Site_in_UCS": {
+                        "inputs": {
+                          "body": "@outputs('Compose_HTTP_request_for_Feature_in_Site_in_UCS')",
+                          "host": {
+                            "workflow": {
+                              "id": "http-copy-children-create-wi"
+                            }
+                          }
+                        },
+                        "runAfter": {
+                          "Compose_HTTP_request_for_Feature_in_Site_in_UCS": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Workflow"
+                      },
+                      "Parse_JSON_Feature_creation_for_Site_in_UCS": {
+                        "inputs": {
+                          "content": "@body('HTTP-Copy-Children-Create-Feature_in_Site_in_UCS')",
+                          "schema": {
+                            "properties": {
+                              "Result": {
+                                "type": "string"
+                              },
+                              "URL": {
+                                "type": "string"
+                              },
+                              "WorkItemType": {
+                                "type": "string"
+                              },
+                              "WorkflowId": {
+                                "type": "string"
+                              },
+                              "WorkflowName": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "runAfter": {
+                          "HTTP-Copy-Children-Create-Feature_in_Site_in_UCS": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ParseJson"
+                      }
+                    },
+                    "foreach": "@body('Get_Feature_from_Site_in_UCS')?['value']",
+                    "runAfter": {
+                      "Get_Feature_from_Site_in_UCS": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Foreach"
+                  },
+                  "For_each_Line_in_Site_in_UCS": {
+                    "actions": {
+                      "Compose_HTTP_request_for_Line_in_Site-UCS": {
+                        "inputs": {
+                          "AreaPath": "@variables('Scale_Area_Path')",
+                          "CopyItemType": "Line",
+                          "Description": "@items('For_each_Line_in_Site_in_UCS')?['System.Description']",
+                          "ID": "@items('For_each_Line_in_Site_in_UCS')?['System.Id']",
+                          "IterationPath": "@body('Create_a_UC_Scale')?['fields']?['System_IterationPath']",
+                          "StackRank": "@items('For_each_Line_in_Site_in_UCS')?['Microsoft.VSTS.Common.StackRank']",
+                          "Tags": "scale-line-template",
+                          "Title": "@items('For_each_Line_in_Site_in_UCS')?['System.Title']",
+                          "URL": "@body('Parse_JSON_Site_creation_in_UCS_response')?['URL']"
+                        },
+                        "runAfter": {},
+                        "type": "Compose"
+                      },
+                      "For_each_User_Story_in_Line_in_Site-UCS": {
+                        "actions": {
+                          "Compose_User_Story_for_Line_in_Site-UCS": {
+                            "inputs": {
+                              "AreaPath": "@variables('Scale_Area_Path')",
+                              "CopyItemType": "User Story",
+                              "Description": "@items('For_each_User_Story_in_Line_in_Site-UCS')?['System.Description']",
+                              "ID": "@items('For_each_User_Story_in_Line_in_Site-UCS')?['System.Id']",
+                              "IterationPath": "@body('Create_a_UC_Scale')?['fields']?['System_IterationPath']",
+                              "StackRank": "@items('For_each_User_Story_in_Line_in_Site-UCS')?['Microsoft.VSTS.Common.StackRank']",
+                              "Title": "@items('For_each_User_Story_in_Line_in_Site-UCS')?['System.Title']",
+                              "URL": "@body('Parse_JSON_Line_in_Site-UCS')?['URL']",
+                              "ValueArea": "@items('For_each_User_Story_in_Line_in_Site-UCS')?['Microsoft.VSTS.Common.ValueArea']"
+                            },
+                            "runAfter": {},
+                            "type": "Compose"
+                          },
+                          "Get_Task_from_User_Story_in_Line_in_Site-UCS": {
+                            "inputs": {
+                              "host": {
+                                "connection": {
+                                  "referenceName": "visualstudioteamservices"
+                                }
+                              },
+                              "method": "get",
+                              "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_User_Story_in_Line_in_Site-UCS')?['System.Id'])}/children",
+                              "queries": {
+                                "account": "@parameters('Organization_Name')",
+                                "project": "@parameters('Master_Project_Name')",
+                                "workItemType": "Task"
+                              }
+                            },
+                            "runAfter": {
+                              "Parse_JSON_User_Story_in_Line_in_Site_UCS": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ApiConnection"
+                          },
+                          "HTTP-Copy-Children-Create-User_Story_in_Line_in_Site-UCS": {
+                            "inputs": {
+                              "body": "@outputs('Compose_User_Story_for_Line_in_Site-UCS')",
+                              "host": {
+                                "workflow": {
+                                  "id": "http-copy-children-create-wi"
+                                }
+                              }
+                            },
+                            "runAfter": {
+                              "Compose_User_Story_for_Line_in_Site-UCS": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Workflow"
+                          },
+                          "Parse_JSON_User_Story_in_Line_in_Site_UCS": {
+                            "inputs": {
+                              "content": "@body('HTTP-Copy-Children-Create-User_Story_in_Line_in_Site-UCS')",
+                              "schema": {
+                                "properties": {
+                                  "Result": {
+                                    "type": "string"
+                                  },
+                                  "URL": {
+                                    "type": "string"
+                                  },
+                                  "WorkItemType": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowId": {
+                                    "type": "string"
+                                  },
+                                  "WorkflowName": {
+                                    "type": "string"
+                                  }
+                                },
+                                "type": "object"
+                              }
+                            },
+                            "runAfter": {
+                              "HTTP-Copy-Children-Create-User_Story_in_Line_in_Site-UCS": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "ParseJson"
+                          },
+                          "_For_each_Task_in_User_Story_in_Line_in_Site-UCS": {
+                            "actions": {
+                              "Compose_Task_for_User_Story_in_Line-Site-UCS": {
+                                "inputs": {
+                                  "AreaPath": "@variables('Scale_Area_Path')",
+                                  "CopyItemType": "Task",
+                                  "Description": "@items('_For_each_Task_in_User_Story_in_Line_in_Site-UCS')?['System.Description']",
+                                  "ID": "@items('_For_each_Task_in_User_Story_in_Line_in_Site-UCS')?['System.Id']",
+                                  "IterationPath": "@body('Create_a_UC_Scale')?['fields']?['System_IterationPath']",
+                                  "StackRank": "@items('_For_each_Task_in_User_Story_in_Line_in_Site-UCS')?['Microsoft.VSTS.Common.StackRank']",
+                                  "Title": "@items('_For_each_Task_in_User_Story_in_Line_in_Site-UCS')?['System.Title']",
+                                  "URL": "@body('Parse_JSON_User_Story_in_Line_in_Site_UCS')?['URL']",
+                                  "ValueArea": "@items('For_each_User_Story_in_Line_in_Site-UCS')?['Microsoft.VSTS.Common.ValueArea']"
+                                },
+                                "runAfter": {},
+                                "type": "Compose"
+                              },
+                              "HTTP-Copy-Children-Create-User_Story_in_Line-Site-UCS": {
+                                "inputs": {
+                                  "body": "@outputs('Compose_Task_for_User_Story_in_Line-Site-UCS')",
+                                  "host": {
+                                    "workflow": {
+                                      "id": "http-copy-children-create-wi"
+                                    }
+                                  }
+                                },
+                                "runAfter": {
+                                  "Compose_Task_for_User_Story_in_Line-Site-UCS": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "type": "Workflow"
+                              },
+                              "Parse_JSON_Task_for_User_Story_in_Line-Site-UCS": {
+                                "inputs": {
+                                  "content": "@body('HTTP-Copy-Children-Create-User_Story_in_Line-Site-UCS')",
+                                  "schema": {
+                                    "properties": {
+                                      "Result": {
+                                        "type": "string"
+                                      },
+                                      "URL": {
+                                        "type": "string"
+                                      },
+                                      "WorkItemType": {
+                                        "type": "string"
+                                      },
+                                      "WorkflowId": {
+                                        "type": "string"
+                                      },
+                                      "WorkflowName": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  }
+                                },
+                                "runAfter": {
+                                  "HTTP-Copy-Children-Create-User_Story_in_Line-Site-UCS": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "type": "ParseJson"
+                              }
+                            },
+                            "foreach": "@body('Get_Task_from_User_Story_in_Line_in_Site-UCS')?['value']",
+                            "runAfter": {
+                              "Get_Task_from_User_Story_in_Line_in_Site-UCS": [
+                                "Succeeded"
+                              ]
+                            },
+                            "type": "Foreach"
+                          }
+                        },
+                        "foreach": "@body('Get_User_Story_from_Line_in_Site-UCS')?['value']",
+                        "runAfter": {
+                          "Get_User_Story_from_Line_in_Site-UCS": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Foreach"
+                      },
+                      "Get_User_Story_from_Line_in_Site-UCS": {
+                        "inputs": {
+                          "host": {
+                            "connection": {
+                              "referenceName": "visualstudioteamservices"
+                            }
+                          },
+                          "method": "get",
+                          "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Line_in_Site_in_UCS')?['System.Id'])}/children",
+                          "queries": {
+                            "account": "@parameters('Organization_Name')",
+                            "project": "@parameters('Master_Project_Name')",
+                            "workItemType": "User Story"
+                          }
+                        },
+                        "runAfter": {
+                          "Parse_JSON_Line_in_Site-UCS": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ApiConnection"
+                      },
+                      "HTTP-Copy-Children-Create-Line_in_Site-UCS": {
+                        "inputs": {
+                          "body": "@outputs('Compose_HTTP_request_for_Line_in_Site-UCS')",
+                          "host": {
+                            "workflow": {
+                              "id": "http-copy-children-create-wi"
+                            }
+                          }
+                        },
+                        "runAfter": {
+                          "Compose_HTTP_request_for_Line_in_Site-UCS": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "Workflow"
+                      },
+                      "Parse_JSON_Line_in_Site-UCS": {
+                        "inputs": {
+                          "content": "@body('HTTP-Copy-Children-Create-Line_in_Site-UCS')",
+                          "schema": {
+                            "properties": {
+                              "Result": {
+                                "type": "string"
+                              },
+                              "URL": {
+                                "type": "string"
+                              },
+                              "WorkItemType": {
+                                "type": "string"
+                              },
+                              "WorkflowId": {
+                                "type": "string"
+                              },
+                              "WorkflowName": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "runAfter": {
+                          "HTTP-Copy-Children-Create-Line_in_Site-UCS": [
+                            "Succeeded"
+                          ]
+                        },
+                        "type": "ParseJson"
+                      }
+                    },
+                    "foreach": "@body('Get_Lines_from_Site_in_UCS')?['value']",
+                    "runAfter": {
+                      "Get_Lines_from_Site_in_UCS": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Foreach"
+                  },
+                  "Get_Feature_from_Site_in_UCS": {
+                    "inputs": {
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "get",
+                      "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Site_in_UCS')?['System.Id'])}/children",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')",
+                        "project": "@parameters('Master_Project_Name')",
+                        "workItemType": "Feature"
+                      }
+                    },
+                    "runAfter": {
+                      "Parse_JSON_Site_creation_in_UCS_response": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ApiConnection"
+                  },
+                  "Get_Lines_from_Site_in_UCS": {
+                    "inputs": {
+                      "host": {
+                        "connection": {
+                          "referenceName": "visualstudioteamservices"
+                        }
+                      },
+                      "method": "get",
+                      "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_Site_in_UCS')?['System.Id'])}/children",
+                      "queries": {
+                        "account": "@parameters('Organization_Name')",
+                        "project": "@parameters('Master_Project_Name')",
+                        "workItemType": "Line"
+                      }
+                    },
+                    "runAfter": {
+                      "For_each_Feature_in_Site_in_UCS": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ApiConnection"
+                  },
+                  "HTTP-Copy-Children-Create-Site_for_UCS": {
+                    "inputs": {
+                      "body": "@outputs('Compose_Site_for_UCS')",
+                      "host": {
+                        "workflow": {
+                          "id": "http-copy-children-create-wi"
+                        }
+                      }
+                    },
+                    "runAfter": {
+                      "Compose_Site_for_UCS": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Workflow"
+                  },
+                  "Parse_JSON_Site_creation_in_UCS_response": {
+                    "inputs": {
+                      "content": "@body('HTTP-Copy-Children-Create-Site_for_UCS')",
+                      "schema": {
+                        "properties": {
+                          "Result": {
+                            "type": "string"
+                          },
+                          "URL": {
+                            "type": "string"
+                          },
+                          "WorkItemType": {
+                            "type": "string"
+                          },
+                          "WorkflowId": {
+                            "type": "string"
+                          },
+                          "WorkflowName": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "runAfter": {
+                      "HTTP-Copy-Children-Create-Site_for_UCS": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "ParseJson"
+                  }
+                },
+                "foreach": "@body('Get_Sites_from_UCS')?['value']",
+                "runAfter": {
+                  "Get_Sites_from_UCS": [
+                    "Succeeded"
+                  ]
+                },
+                "type": "Foreach"
+              },
+              "Get_Epic_from_UCS": {
+                "inputs": {
+                  "host": {
+                    "connection": {
+                      "referenceName": "visualstudioteamservices"
+                    }
+                  },
+                  "method": "get",
+                  "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_UC_Scale')?['System.Id'])}/children",
+                  "queries": {
+                    "account": "@parameters('Organization_Name')",
+                    "project": "@parameters('Master_Project_Name')",
+                    "workItemType": "Epic"
+                  }
+                },
+                "runAfter": {},
+                "type": "ApiConnection"
+              },
+              "Get_Sites_from_UCS": {
+                "inputs": {
+                  "host": {
+                    "connection": {
+                      "referenceName": "visualstudioteamservices"
+                    }
+                  },
+                  "method": "get",
+                  "path": "/_apis/wit/workitems/@{encodeURIComponent(items('For_each_UC_Scale')?['System.Id'])}/children",
+                  "queries": {
+                    "account": "@parameters('Organization_Name')",
+                    "project": "@parameters('Master_Project_Name')",
+                    "workItemType": "Site"
+                  }
+                },
+                "runAfter": {
+                  "For_each_Epic_in_UCS": [
+                    "Succeeded"
+                  ]
+                },
+                "type": "ApiConnection"
+              }
+            },
+            "foreach": "@body('Get_UC_Scale_Template')?['value']",
+            "runAfter": {
+              "Get_UC_Scale_Template": [
+                "Succeeded"
+              ]
+            },
+            "type": "Foreach"
+          },
+          "Get_UCI-Template": {
+            "inputs": {
+              "host": {
+                "connection": {
+                  "referenceName": "visualstudioteamservices"
+                }
+              },
+              "method": "get",
+              "path": "/v2/@{encodeURIComponent(parameters('Master_Project_Name'))}/queryResults/@{encodeURIComponent('8bb3ea4b-ebc3-4776-b905-b773cbadc8f4')}",
+              "queries": {
+                "account": "@parameters('Organization_Name')",
+                "workItemsCount": 1
+              }
+            },
+            "metadata": {
+              "8bb3ea4b-ebc3-4776-b905-b773cbadc8f4": "Shared Queries/Automation/Use Case Innovation-Template"
+            },
+            "runAfter": {
+              "Create_a_UC-Template": [
+                "Succeeded"
+              ]
+            },
+            "type": "ApiConnection"
+          },
+          "Get_UC_Innovation_Template": {
+            "inputs": {
+              "host": {
+                "connection": {
+                  "referenceName": "visualstudioteamservices"
+                }
+              },
+              "method": "get",
+              "path": "/v2/@{encodeURIComponent(parameters('Master_Project_Name'))}/queryResults/@{encodeURIComponent('8bb3ea4b-ebc3-4776-b905-b773cbadc8f4')}",
+              "queries": {
+                "account": "@parameters('Organization_Name')",
+                "workItemsCount": 1
+              }
+            },
+            "metadata": {
+              "8bb3ea4b-ebc3-4776-b905-b773cbadc8f4": "Shared Queries/Automation/Use Case Innovation-Template"
+            },
+            "runAfter": {
+              "Create_a_UC_Innovation": [
+                "Succeeded"
+              ]
+            },
+            "type": "ApiConnection"
+          },
+          "Get_UC_Scale_Template": {
+            "inputs": {
+              "host": {
+                "connection": {
+                  "referenceName": "visualstudioteamservices"
+                }
+              },
+              "method": "get",
+              "path": "/v2/@{encodeURIComponent(parameters('Master_Project_Name'))}/queryResults/@{encodeURIComponent('2cb51a66-136a-412f-bded-8a380a0ff236')}",
+              "queries": {
+                "account": "@parameters('Organization_Name')",
+                "workItemsCount": 1
+              }
+            },
+            "metadata": {
+              "2cb51a66-136a-412f-bded-8a380a0ff236": "Shared Queries/Automation/Use Case Scale-Template"
+            },
+            "runAfter": {
+              "Create_a_UC_Scale": [
+                "Succeeded"
+              ]
+            },
+            "type": "ApiConnection"
+          },
+          "Logic_App_Creation_Function": {
+            "inputs": {
+              "authentication": {
+                "audience": "9d7d39d4-9f70-471d-849f-7bde193ae709",
+                "type": "ManagedServiceIdentity"
+              },
+              "body": {
+                "name": "@{body('Get_work_item_details')?['fields']?['System_Title']}",
+                "use_case_number": "@{body('Get_work_item_details')?['fields']?['Custom_UseCaseNumber']}"
+              },
+              "method": "POST",
+              "uri": "https://devopsprojectcreation.azurewebsites.net/api/Logic_App_Creation_1?"
+            },
+            "runAfter": {
+              "For_each_UCI-Template": [
+                "Succeeded"
+              ],
+              "For_each_UC_Innovation": [
+                "Succeeded"
+              ],
+              "For_each_UC_Scale": [
+                "Succeeded"
+              ]
+            },
+            "type": "Http"
+          },
+          "New_Project_Creation_Function": {
+            "inputs": {
+              "authentication": {
+                "audience": "9d7d39d4-9f70-471d-849f-7bde193ae709",
+                "type": "ManagedServiceIdentity"
+              },
+              "body": {
+                "name": "@{body('Get_work_item_details')?['fields']?['System_Title']}",
+                "use_case_number": "@{body('Get_work_item_details')?['fields']?['Custom_UseCaseNumber']}"
+              },
+              "method": "POST",
+              "uri": "https://devopsprojectcreation.azurewebsites.net/api/DevopsPrjCreation?"
+            },
+            "runAfter": {},
+            "type": "Http"
+          },
+          "Set_Innovation_Area_Path": {
+            "inputs": {
+              "name": "Innovation_Area_Path",
+              "value": "@{variables('Target_Project_Name')}\\\\Innovation Team"
+            },
+            "runAfter": {
+              "Set_Scale_Area_Path": [
+                "Succeeded"
+              ]
+            },
+            "type": "SetVariable"
+          },
+          "Set_Scale_Area_Path": {
+            "inputs": {
+              "name": "Scale_Area_Path",
+              "value": "@{variables('Target_Project_Name')}\\\\Scale Team"
+            },
+            "runAfter": {
+              "Set_Target_Project_Name": [
+                "Succeeded"
+              ]
+            },
+            "type": "SetVariable"
+          },
+          "Set_Target_Project_Name": {
+            "inputs": {
+              "name": "Target_Project_Name",
+              "value": "@{body('Get_work_item_details')?['fields']?['System_Title']}_@{body('Get_work_item_details')?['fields']?['Custom_UseCaseNumber']}"
+            },
+            "runAfter": {
+              "Delay": [
+                "Succeeded"
+              ]
+            },
+            "type": "SetVariable"
+          }
+        },
+        "expression": {
+          "and": [
+            {
+              "equals": [
+                "@body('Get_work_item_details')?['fields']?['System_State']",
+                "Approved by PG (GBS)"
+              ]
+            },
+            {
+              "equals": [
+                "@body('Get_work_item_details')?['fields']?['Custom_NewADOProject']",
+                "Provision AZDO"
+              ]
+            }
+          ]
+        },
+        "runAfter": {
+          "Get_work_item_details": [
+            "Succeeded"
+          ]
+        },
+        "type": "If"
+      },
+      "Get_work_item_details": {
+        "inputs": {
+          "host": {
+            "connection": {
+              "referenceName": "visualstudioteamservices"
+            }
+          },
+          "method": "get",
+          "path": "/_apis/wit/workitems/@{encodeURIComponent(triggerBody()?['id'])}",
+          "queries": {
+            "account": "@parameters('Organization_Name')",
+            "project": "@parameters('prj_name')",
+            "typeName": "Use Case Intake"
+          }
+        },
+        "runAfter": {
+          "Target_Project_Name": [
+            "Succeeded"
+          ]
+        },
+        "type": "ApiConnection"
+      },
+      "Initialize_Scale_Area_Path": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Scale_Area_Path",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {
+          "Innovation_Area_Path_Value": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_Template_Area_Path": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Template_Area_Path",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_Scale_Area_Path": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Innovation_Area_Path_Value": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Innovation_Area_Path",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {},
+        "type": "InitializeVariable"
+      },
+      "Send_an_email_(V2)_2": {
+        "inputs": {
+          "body": {
+            "Body": "<p>@{variables('Target_Project_Name')} is created. URL is:<br>\n<a href=\"https://dev.azure.com/@{parameters('Organization_Name')}/@{variables('Target_Project_Name')}\">URL:</a><br>\n&nbsp;</p>",
+            "Importance": "Normal",
+            "Subject": "New Project created",
+            "To": "anshukatare@microsoft.com"
+          },
+          "host": {
+            "connection": {
+              "referenceName": "office365"
+            }
+          },
+          "method": "post",
+          "path": "/v2/Mail"
+        },
+        "runAfter": {
+          "Condition": [
+            "Succeeded"
+          ]
+        },
+        "type": "ApiConnection"
+      },
+      "Target_Project_Name": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Target_Project_Name",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_Template_Area_Path": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "When_a_work_item_is_updated": {
+        "evaluatedRecurrence": {
+          "frequency": "Second",
+          "interval": 10
+        },
+        "inputs": {
+          "host": {
+            "connection": {
+              "referenceName": "visualstudioteamservices"
+            }
+          },
+          "method": "get",
+          "path": "/v2/workitemupdated_trigger/@{encodeURIComponent(parameters('prj_name'))}/_apis/wit/wiql",
+          "queries": {
+            "account": "@parameters('Organization_Name')",
+            "areaPathComparison": "Equals",
+            "iterationPathComparison": "Equals",
+            "wiql__System_WorkItemType": "Use Case Intake"
+          }
+        },
+        "recurrence": {
+          "frequency": "Second",
+          "interval": 10
+        },
+        "splitOn": "@triggerBody()?['value']",
+        "type": "ApiConnection"
+      }
+    }
+  },
+  "kind": "Stateful"
+}

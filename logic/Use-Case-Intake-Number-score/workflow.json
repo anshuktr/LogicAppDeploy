@@ -1,0 +1,542 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Condition_for_Use_case_Number": {
+        "actions": {
+          "Update_Use_Case_Number": {
+            "inputs": {
+              "body": {
+                "userEnteredFields": {
+                  "Use Case Number": "@variables('UseCaseNumber')"
+                }
+              },
+              "host": {
+                "connection": {
+                  "referenceName": "visualstudioteamservices"
+                }
+              },
+              "method": "patch",
+              "path": "/_apis/wit/workitems/@{encodeURIComponent(body('Get_work_item_details')?['id'])}",
+              "queries": {
+                "account": "@parameters('Organization_Name')"
+              }
+            },
+            "runAfter": {},
+            "type": "ApiConnection"
+          }
+        },
+        "expression": {
+          "and": [
+            {
+              "equals": [
+                "@body('Get_work_item_details')?['fields']?['Custom_UseCaseNumber']",
+                "@null"
+              ]
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_sum7": [
+            "Succeeded"
+          ]
+        },
+        "type": "If"
+      },
+      "Condition_for_Use_case_Score_Calculation": {
+        "actions": {
+          "Set_sum1": {
+            "inputs": {
+              "name": "sum1",
+              "value": "@add(int(variables('Tangible Value Impact')),int(variables('Scalability for PnG')))"
+            },
+            "runAfter": {},
+            "type": "SetVariable"
+          },
+          "Set_sum2": {
+            "inputs": {
+              "name": "sum2",
+              "value": "@add(int(variables('Transcend Products')),int(variables('Readiness')))"
+            },
+            "runAfter": {
+              "Set_sum1": [
+                "Succeeded"
+              ]
+            },
+            "type": "SetVariable"
+          },
+          "Set_sum3": {
+            "inputs": {
+              "name": "sum3",
+              "value": "@add(int(variables('Problems solved')), int(variables('Complexity')))"
+            },
+            "runAfter": {
+              "Set_sum2": [
+                "Succeeded"
+              ]
+            },
+            "type": "SetVariable"
+          },
+          "Set_sum4": {
+            "inputs": {
+              "name": "sum4",
+              "value": "@add(int(variables('Dependencies')),int(variables('Intangible Value Impact')))"
+            },
+            "runAfter": {
+              "Set_sum3": [
+                "Succeeded"
+              ]
+            },
+            "type": "SetVariable"
+          },
+          "Set_sum5": {
+            "inputs": {
+              "name": "sum5",
+              "value": "@add(variables('sum1'),variables('sum2'))"
+            },
+            "runAfter": {
+              "Set_sum4": [
+                "Succeeded"
+              ]
+            },
+            "type": "SetVariable"
+          },
+          "Set_sum6": {
+            "inputs": {
+              "name": "sum6",
+              "value": "@add(variables('sum3'),variables('sum4'))"
+            },
+            "runAfter": {
+              "Set_sum5": [
+                "Succeeded"
+              ]
+            },
+            "type": "SetVariable"
+          },
+          "Set_sum7": {
+            "inputs": {
+              "name": "sum7",
+              "value": "@add(variables('sum5'),variables('sum6'))"
+            },
+            "runAfter": {
+              "Set_sum6": [
+                "Succeeded"
+              ]
+            },
+            "type": "SetVariable"
+          },
+          "Update_Use_Case_Score": {
+            "inputs": {
+              "body": {
+                "userEnteredFields": {
+                  "Use Case Score": "@{variables('sum7')}"
+                }
+              },
+              "host": {
+                "connection": {
+                  "referenceName": "visualstudioteamservices"
+                }
+              },
+              "method": "patch",
+              "path": "/_apis/wit/workitems/@{encodeURIComponent(triggerBody()?['id'])}",
+              "queries": {
+                "account": "@parameters('Organization_Name')"
+              }
+            },
+            "runAfter": {
+              "Set_sum7": [
+                "Succeeded"
+              ]
+            },
+            "type": "ApiConnection"
+          }
+        },
+        "expression": {
+          "and": [
+            {
+              "equals": [
+                "@body('Get_work_item_details')?['fields']?['Custom_UseCaseScore']",
+                "@null"
+              ]
+            },
+            {
+              "not": {
+                "equals": [
+                  "@body('Get_work_item_details')?['fields']?['Custom_ScoreforIntangiblevalueimpact']",
+                  "@null"
+                ]
+              }
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_sum7": [
+            "Succeeded"
+          ]
+        },
+        "type": "If"
+      },
+      "Get_work_item_details": {
+        "inputs": {
+          "host": {
+            "connection": {
+              "referenceName": "visualstudioteamservices"
+            }
+          },
+          "method": "get",
+          "path": "/_apis/wit/workitems/@{encodeURIComponent(triggerBody()?['id'])}",
+          "queries": {
+            "account": "@parameters('Organization_Name')",
+            "project": "@parameters('prj_name')",
+            "typeName": "Use Case Intake"
+          }
+        },
+        "runAfter": {},
+        "type": "ApiConnection"
+      },
+      "Initialize_Complexity": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Complexity",
+              "type": "string",
+              "value": "@body('Get_work_item_details')?['fields']?['Custom_ScoreforHowcomplexisthisusecase']"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_Problems_solved": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_Dependencies": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Dependencies",
+              "type": "string",
+              "value": "@body('Get_work_item_details')?['fields']?['Custom_ScoreforAretheremajorhardwaresoftwaredatanetworkinfrastructureorenvironmentaldependencies']"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_Complexity": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_ID": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "UseCaseID",
+              "type": "string",
+              "value": "@{triggerBody()?['id']}"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_Use_Case_Number": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_Intangible_Value_Impact": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Intangible Value Impact",
+              "type": "string",
+              "value": "@body('Get_work_item_details')?['fields']?['Custom_ScoreforIntangiblevalueimpact']"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_Tangible_Value_Impact": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_Problems_solved": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Problems solved",
+              "type": "string",
+              "value": "@body('Get_work_item_details')?['fields']?['Custom_ScoreforWhatproblemsdowesolvebyunlockingthisusecase']"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_Readiness": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_Random_Number": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Random Number",
+              "type": "string",
+              "value": "@{rand(0,9)}"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_ID": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_Readiness": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Readiness",
+              "type": "string",
+              "value": "@body('Get_work_item_details')?['fields']?['Custom_ScoreforIsthebusinessreadytoexecutethisusecase']"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_Transcend_Products": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_Scalability_for_PnG": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Scalability for PnG",
+              "type": "string",
+              "value": "@body('Get_work_item_details')?['fields']?['Custom_ScoreforHowbroadlycanPnGscalethisusecase']"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_Intangible_Value_Impact": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_Tangible_Value_Impact": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Tangible Value Impact",
+              "type": "string",
+              "value": "@body('Get_work_item_details')?['fields']?['Custom_ScoreforTangiblevalueimpact']"
+            }
+          ]
+        },
+        "runAfter": {
+          "Set_UseCaseNumber": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_Transcend_Products": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "Transcend Products",
+              "type": "string",
+              "value": "@body('Get_work_item_details')?['fields']?['Custom_ScoreforIstherepotentialforthisusecasetotranscendproducts']"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_Scalability_for_PnG": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_Use_Case_Number": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "UseCaseNumber",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {
+          "Get_work_item_details": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_sum1": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "sum1",
+              "type": "integer"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_Dependencies": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_sum2": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "sum2",
+              "type": "integer"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_sum1": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_sum3": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "sum3",
+              "type": "integer"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_sum2": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_sum4": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "sum4",
+              "type": "integer"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_sum3": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_sum5": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "sum5",
+              "type": "integer"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_sum4": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_sum6": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "sum6",
+              "type": "integer"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_sum5": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_sum7": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "sum7",
+              "type": "integer"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_sum6": [
+            "Succeeded"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Set_UseCaseNumber": {
+        "inputs": {
+          "name": "UseCaseNumber",
+          "value": "MDF_UC_@{variables('UseCaseID')}@{variables('Random Number')}"
+        },
+        "runAfter": {
+          "Initialize_Random_Number": [
+            "Succeeded"
+          ]
+        },
+        "type": "SetVariable"
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "When_a_work_item_is_updated": {
+        "inputs": {
+          "host": {
+            "connection": {
+              "referenceName": "visualstudioteamservices"
+            }
+          },
+          "method": "get",
+          "path": "/v2/workitemupdated_trigger/@{encodeURIComponent(parameters('prj_name'))}/_apis/wit/wiql",
+          "queries": {
+            "account": "@parameters('Organization_Name')",
+            "areaPathComparison": "Equals",
+            "iterationPathComparison": "Equals",
+            "wiql__System_WorkItemType": "Use Case Intake"
+          }
+        },
+        "recurrence": {
+          "frequency": "Second",
+          "interval": 15
+        },
+        "runtimeConfiguration": {
+          "concurrency": {
+            "runs": 1
+          }
+        },
+        "splitOn": "@triggerBody()?['value']",
+        "type": "ApiConnection"
+      }
+    }
+  },
+  "kind": "Stateful"
+}

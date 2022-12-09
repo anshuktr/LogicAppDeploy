@@ -1,20 +1,22 @@
 {
   "IsEncrypted": false,
   "Values": {
-    "WEBSITE_SLOT_NAME": "Production",
+    "azureFunctionOperation_functionAppKey": "Mx5d9h2z_FghZIzx0U-qGmroDbEGBmT79CjulxW48Kv1AzFubcYW4Q==",
     "AzureFunctionsJobHost__extensionBundle__id": "Microsoft.Azure.Functions.ExtensionBundle.Workflows",
-    "FUNCTIONS_EXTENSION_VERSION": "~3",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
     "ScmType": "None",
     "WEBSITE_AUTH_ENABLED": "False",
     "AzureFunctionsJobHost__extensionBundle__version": "[1.*, 2.0.0)",
-    "APPINSIGHTS_INSTRUMENTATIONKEY": "da5d979d-0da7-4c2b-b56d-501a7442b7b6",
-    "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=da5d979d-0da7-4c2b-b56d-501a7442b7b6;IngestionEndpoint=https://centralus-2.in.applicationinsights.azure.com/;LiveEndpoint=https://centralus.livediagnostics.monitor.azure.com/",
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "9790a6fe-8110-4f4b-91da-2f45115f5247",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=9790a6fe-8110-4f4b-91da-2f45115f5247;IngestionEndpoint=https://centralindia-0.in.applicationinsights.azure.com/;LiveEndpoint=https://centralindia.livediagnostics.monitor.azure.com/",
     "WEBSITE_NODE_DEFAULT_VERSION": "14.20.0",
-    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "DefaultEndpointsProtocol=https;AccountName=pngterraformtesting95c6;AccountKey=hlYGXM194C3U6xeD7yLwZ0Lkk5fexoLAXMgcgs+YgQQHoIRV40LOk6lc0QdhoagxS/Cb1h2VnNYB+AStbsHQwA==;EndpointSuffix=core.windows.net",
-    "WEBSITE_CONTENTSHARE": "la-10809a",
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "DefaultEndpointsProtocol=https;AccountName=pngterraformtestingac1a;AccountKey=Z5zF2HATSGbNerrKo7XP3zpSBHgJPbGObUXFwjOIGKxfq2xKGSieYwysh1+hErrG0osiVaWSds48+AStlN9XUw==;EndpointSuffix=core.windows.net",
+    "WEBSITE_CONTENTSHARE": "png-la-comba5fe",
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=pngterraformtestingac1a;AccountKey=Z5zF2HATSGbNerrKo7XP3zpSBHgJPbGObUXFwjOIGKxfq2xKGSieYwysh1+hErrG0osiVaWSds48+AStlN9XUw==;EndpointSuffix=core.windows.net",
     "FUNCTIONS_WORKER_RUNTIME": "node",
-    "WEBSITE_SITE_NAME": "LA-10",
-    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=pngterraformtesting95c6;AccountKey=hlYGXM194C3U6xeD7yLwZ0Lkk5fexoLAXMgcgs+YgQQHoIRV40LOk6lc0QdhoagxS/Cb1h2VnNYB+AStbsHQwA==;EndpointSuffix=core.windows.net",
-    "APP_KIND": "workflowApp"
+    "WEBSITE_SITE_NAME": "Png-LA-comb",
+    "Workflows.auto-copy-test3.FlowState": "Disabled",
+    "APP_KIND": "workflowApp",
+    "WEBSITE_SLOT_NAME": "Production"
   }
 }
